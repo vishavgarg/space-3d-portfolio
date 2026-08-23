@@ -1,0 +1,78 @@
+import React, { useRef, useEffect } from 'react';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
+import { usePlayerStore } from '../../store/playerStore';
+
+export const DroneCamera = () => {
+  const playerPosition = usePlayerStore((s) => s.position);
+  const playerRotation = usePlayerStore((s) => s.rotation);
+  const resetTrigger = usePlayerStore((s) => s.resetTrigger);
+
+  // Initial High-Altitude Vista camera above Contact Island
+  const currentCamPos = useRef(new THREE.Vector3(0, 24, 68));
+  const currentLookAt = useRef(new THREE.Vector3(0, 10, 0));
+  const isIntroComplete = useRef(false);
+  const introTime = useRef(0);
+
+  // When reset trigger fires, snap camera smoothly behind high spawn point
+  useEffect(() => {
+    if (resetTrigger > 0) {
+      currentCamPos.current.set(0, 24, 68);
+      currentLookAt.current.set(0, 10, 0);
+    }
+  }, [resetTrigger]);
+
+  useFrame((state, delta) => {
+    const [px, py, pz] = playerPosition;
+    const [, ry] = playerRotation;
+
+    // Cinematic Intro Fly-in for first 1.8 seconds
+    if (!isIntroComplete.current) {
+      introTime.current += delta;
+      const t = Math.min(introTime.current / 1.8, 1);
+      
+      const startPos = new THREE.Vector3(0, 32, 80);
+      const targetFollowPos = new THREE.Vector3(
+        px - Math.sin(ry) * 12,
+        py + 5.8,
+        pz - Math.cos(ry) * 12
+      );
+
+      currentCamPos.current.lerpVectors(startPos, targetFollowPos, THREE.MathUtils.smoothstep(t, 0, 1));
+      currentLookAt.current.lerp(new THREE.Vector3(px, py + 1.2, pz - 10), delta * 5);
+
+      state.camera.position.copy(currentCamPos.current);
+      state.camera.lookAt(currentLookAt.current);
+
+      if (t >= 1) {
+        isIntroComplete.current = true;
+      }
+      return;
+    }
+
+    // Dynamic camera tracking based on position and yaw angle
+    const distance = 12.0;
+    const height = 5.8;
+
+    const idealOffset = new THREE.Vector3(
+      px - Math.sin(ry) * distance,
+      py + height,
+      pz - Math.cos(ry) * distance
+    );
+
+    const idealLookAt = new THREE.Vector3(
+      px + Math.sin(ry) * 8,
+      py + 1.2,
+      pz + Math.cos(ry) * 8
+    );
+
+    // Fast, responsive camera tracking
+    currentCamPos.current.lerp(idealOffset, delta * 8);
+    currentLookAt.current.lerp(idealLookAt, delta * 12);
+
+    state.camera.position.copy(currentCamPos.current);
+    state.camera.lookAt(currentLookAt.current);
+  });
+
+  return null;
+};
