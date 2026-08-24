@@ -56,7 +56,7 @@ export default function App() {
   const isArcadeActive = dogfightActive || warpRaceActive;
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-[#040711]">
+    <div className="relative w-screen h-screen overflow-hidden bg-[#040711] touch-none overscroll-none select-none">
       {/* 3D WebGL Canvas Layer */}
       <Canvas
         shadows

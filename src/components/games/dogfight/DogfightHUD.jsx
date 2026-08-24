@@ -80,20 +80,20 @@ export const DogfightHUD = () => {
       )}
 
       {/* 3. Top Header Status Bar */}
-      <div className="fixed top-5 inset-x-0 flex flex-col items-center gap-2 pointer-events-auto">
-        <div className="flex items-center gap-4 sm:gap-6 px-5 sm:px-6 py-2.5 rounded-2xl bg-slate-950/85 backdrop-blur-md border border-cyan-500/40 shadow-2xl shadow-cyan-500/10">
+      <div className="fixed top-3 sm:top-5 inset-x-0 flex flex-col items-center gap-2 pointer-events-auto px-2 pt-safe">
+        <div className="flex items-center gap-2.5 sm:gap-6 px-3 sm:px-6 py-1.5 sm:py-2.5 rounded-2xl bg-slate-950/90 backdrop-blur-md border border-cyan-500/40 shadow-2xl shadow-cyan-500/10 max-w-full overflow-x-auto no-scrollbar">
           {/* Sector Badge */}
-          <div className="flex items-center gap-2 text-cyan-400 font-mono font-bold text-xs sm:text-sm">
-            <Flame className="w-4 h-4 text-pink-500 animate-bounce" />
-            <span>SECTOR {dogfightWave}</span>
+          <div className="flex items-center gap-1 sm:gap-2 text-cyan-400 font-mono font-bold text-xs sm:text-sm shrink-0">
+            <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-pink-500 animate-bounce" />
+            <span>SEC {dogfightWave}</span>
           </div>
 
-          <div className="h-4 w-px bg-slate-800" />
+          <div className="h-4 w-px bg-slate-800 shrink-0" />
 
           {/* Shield Health Bar */}
-          <div className="flex items-center gap-2.5">
-            <Shield className={`w-4 h-4 ${isLowHealth ? 'text-rose-400 animate-pulse' : 'text-cyan-400'}`} />
-            <div className="w-20 sm:w-28 h-2.5 bg-slate-900 rounded-full border border-slate-700 overflow-hidden p-0.5">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+            <Shield className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isLowHealth ? 'text-rose-400 animate-pulse' : 'text-cyan-400'}`} />
+            <div className="w-14 sm:w-28 h-2 sm:h-2.5 bg-slate-900 rounded-full border border-slate-700 overflow-hidden p-0.5">
               <div
                 className={`h-full rounded-full transition-all duration-150 ${
                   healthPercent > 50
@@ -105,37 +105,37 @@ export const DogfightHUD = () => {
                 style={{ width: `${healthPercent}%` }}
               />
             </div>
-            <span className={`text-[11px] font-mono font-bold ${isLowHealth ? 'text-rose-400' : 'text-slate-300'}`}>
+            <span className={`text-[10px] sm:text-[11px] font-mono font-bold ${isLowHealth ? 'text-rose-400' : 'text-slate-300'}`}>
               {Math.round(dogfightHealth)}%
             </span>
           </div>
 
-          <div className="h-4 w-px bg-slate-800" />
+          <div className="h-4 w-px bg-slate-800 shrink-0" />
 
           {/* Lives Display */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
             {[1, 2, 3].map((life) => (
               <Heart
                 key={life}
-                className={`w-3.5 h-3.5 ${
+                className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${
                   life <= dogfightLives ? 'text-rose-500 fill-rose-500' : 'text-slate-700'
                 }`}
               />
             ))}
           </div>
 
-          <div className="h-4 w-px bg-slate-800" />
+          <div className="h-4 w-px bg-slate-800 shrink-0" />
 
           {/* Score Counter */}
-          <div className="flex items-center gap-1.5 text-white font-mono font-bold text-xs sm:text-sm">
-            <Trophy className="w-4 h-4 text-amber-400" />
+          <div className="flex items-center gap-1 text-white font-mono font-bold text-xs sm:text-sm shrink-0">
+            <Trophy className="w-3.5 h-3.5 text-amber-400" />
             <span>{dogfightScore.toLocaleString()}</span>
           </div>
 
-          <div className="h-4 w-px bg-slate-800" />
+          <div className="hidden sm:block h-4 w-px bg-slate-800 shrink-0" />
 
           {/* Kills */}
-          <div className="hidden sm:flex items-center gap-1.5 text-emerald-400 font-mono text-xs">
+          <div className="hidden sm:flex items-center gap-1.5 text-emerald-400 font-mono text-xs shrink-0">
             <Crosshair className="w-3.5 h-3.5" />
             <span>{dogfightKills} KILLS</span>
           </div>
@@ -143,7 +143,7 @@ export const DogfightHUD = () => {
           {/* Exit Button */}
           <button
             onClick={endDogfight}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-900 hover:bg-rose-950/60 border border-slate-800 hover:border-rose-500/40 text-slate-400 hover:text-rose-300 text-xs font-mono transition-colors cursor-pointer"
+            className="flex items-center gap-1 px-2 py-1 rounded-xl bg-slate-900 hover:bg-rose-950/60 border border-slate-800 hover:border-rose-500/40 text-slate-400 hover:text-rose-300 text-xs font-mono transition-colors cursor-pointer shrink-0"
           >
             <X className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">EXIT</span>
@@ -152,24 +152,24 @@ export const DogfightHUD = () => {
 
         {/* Dynamic Combo Streak Badge */}
         {dogfightCombo > 1 && (
-          <div className="px-4 py-1 rounded-full bg-gradient-to-r from-amber-500/30 to-pink-500/30 border border-amber-400/50 backdrop-blur-md text-amber-300 font-mono text-xs font-bold animate-bounce shadow-lg shadow-amber-500/20 flex items-center gap-1.5">
+          <div className="px-3 sm:px-4 py-1 rounded-full bg-gradient-to-r from-amber-500/30 to-pink-500/30 border border-amber-400/50 backdrop-blur-md text-amber-300 font-mono text-[11px] sm:text-xs font-bold animate-bounce shadow-lg shadow-amber-500/20 flex items-center gap-1.5">
             <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-            <span>COMBO x{dogfightCombo}! +{(dogfightCombo - 1) * 50}% BONUS</span>
+            <span>COMBO x{dogfightCombo}!</span>
           </div>
         )}
       </div>
 
       {/* 4. Cinematic Sector Announcement Banner */}
       {showSectorBanner && (
-        <div className="fixed top-28 inset-x-0 flex justify-center pointer-events-none animate-in fade-in zoom-in duration-300">
-          <div className="px-8 py-3 rounded-2xl bg-slate-950/90 border-2 border-pink-500 shadow-[0_0_40px_rgba(236,72,153,0.4)] backdrop-blur-xl text-center">
-            <span className="text-[11px] font-mono text-pink-400 tracking-widest block font-bold">
+        <div className="fixed top-24 sm:top-28 inset-x-0 flex justify-center pointer-events-none px-4 animate-in fade-in zoom-in duration-300">
+          <div className="px-6 sm:px-8 py-2.5 sm:py-3 rounded-2xl bg-slate-950/95 border-2 border-pink-500 shadow-[0_0_40px_rgba(236,72,153,0.4)] backdrop-blur-xl text-center max-w-sm sm:max-w-md">
+            <span className="text-[10px] sm:text-[11px] font-mono text-pink-400 tracking-widest block font-bold">
               HOSTILE ARMADA ESCALATION
             </span>
-            <h2 className="text-xl sm:text-2xl font-black text-white font-sans tracking-wide">
+            <h2 className="text-lg sm:text-2xl font-black text-white font-sans tracking-wide">
               ⚠️ SECTOR {dogfightWave} ENGAGED
             </h2>
-            <span className="text-xs font-mono text-slate-300">
+            <span className="text-[11px] sm:text-xs font-mono text-slate-300 block mt-1">
               {dogfightWave === 2
                 ? 'Assault Raiders in formation — Prepare for enemy fire!'
                 : dogfightWave === 3
@@ -182,48 +182,49 @@ export const DogfightHUD = () => {
 
       {/* 5. Instruction Prompt (Fades) */}
       {showHelp && !dogfightGameOver && (
-        <div className="fixed bottom-12 inset-x-0 flex justify-center transition-opacity duration-700">
-          <div className="px-6 py-2.5 rounded-full bg-slate-950/90 border border-cyan-500/40 text-cyan-300 font-mono text-xs sm:text-sm shadow-xl shadow-cyan-500/20 backdrop-blur-md">
-            🖱️ Move Mouse to Aim • Click or [Space]/[F] to Fire • Dodge Enemy Lasers!
+        <div className="fixed bottom-12 inset-x-0 flex justify-center px-4 transition-opacity duration-700">
+          <div className="px-5 py-2 rounded-full bg-slate-950/90 border border-cyan-500/40 text-cyan-300 font-mono text-[11px] sm:text-xs shadow-xl shadow-cyan-500/20 backdrop-blur-md text-center">
+            <span className="sm:hidden">👆 Touch & Drag to Aim • Tap Screen to Fire!</span>
+            <span className="hidden sm:inline">🖱️ Move Mouse to Aim • Click or [Space]/[F] to Fire • Dodge Enemy Lasers!</span>
           </div>
         </div>
       )}
 
       {/* 6. Game Over Modal Overlay */}
       {dogfightGameOver && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-xl p-4 pointer-events-auto animate-in fade-in duration-300">
-          <div className="relative w-full max-w-md bg-slate-950 border-2 border-rose-500/60 rounded-3xl p-6 sm:p-8 shadow-[0_0_60px_rgba(244,63,94,0.3)] text-center">
-            <div className="w-16 h-16 rounded-2xl bg-rose-500/20 border border-rose-500/40 mx-auto flex items-center justify-center mb-4 text-rose-400 shadow-[0_0_25px_rgba(244,63,94,0.4)]">
-              <AlertTriangle className="w-8 h-8" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-xl p-4 pointer-events-auto animate-in fade-in duration-300 overflow-y-auto">
+          <div className="relative w-full max-w-md bg-slate-950 border-2 border-rose-500/60 rounded-3xl p-5 sm:p-8 shadow-[0_0_60px_rgba(244,63,94,0.3)] text-center my-auto">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-rose-500/20 border border-rose-500/40 mx-auto flex items-center justify-center mb-3 sm:mb-4 text-rose-400 shadow-[0_0_25px_rgba(244,63,94,0.4)]">
+              <AlertTriangle className="w-7 h-7 sm:w-8 sm:h-8" />
             </div>
 
-            <span className="text-xs font-mono text-rose-400 tracking-widest block font-bold mb-1">
+            <span className="text-[10px] sm:text-xs font-mono text-rose-400 tracking-widest block font-bold mb-1">
               SYSTEM CRITICAL
             </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-white font-sans mb-4">
+            <h2 className="text-xl sm:text-3xl font-black text-white font-sans mb-2 sm:mb-4">
               MISSION FAILED
             </h2>
-            <p className="text-xs sm:text-sm text-slate-400 font-sans mb-6">
+            <p className="text-xs sm:text-sm text-slate-400 font-sans mb-4 sm:mb-6">
               Your fighter vessel sustained critical hull damage and shields collapsed.
             </p>
 
             {/* Score Breakdown Cards */}
-            <div className="grid grid-cols-2 gap-3 mb-6 font-mono">
-              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-center">
-                <span className="text-[10px] text-slate-500 block">FINAL SCORE</span>
-                <span className="text-lg font-bold text-white">{dogfightScore.toLocaleString()}</span>
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-5 sm:mb-6 font-mono text-xs">
+              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-2.5 sm:p-3 text-center">
+                <span className="text-[9px] sm:text-[10px] text-slate-500 block">FINAL SCORE</span>
+                <span className="text-base sm:text-lg font-bold text-white">{dogfightScore.toLocaleString()}</span>
               </div>
-              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-center">
-                <span className="text-[10px] text-slate-500 block">HIGH SCORE</span>
-                <span className="text-lg font-bold text-amber-400">{dogfightHighScore.toLocaleString()}</span>
+              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-2.5 sm:p-3 text-center">
+                <span className="text-[9px] sm:text-[10px] text-slate-500 block">HIGH SCORE</span>
+                <span className="text-base sm:text-lg font-bold text-amber-400">{dogfightHighScore.toLocaleString()}</span>
               </div>
-              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-center">
-                <span className="text-[10px] text-slate-500 block">SECTOR REACHED</span>
-                <span className="text-lg font-bold text-cyan-400">SECTOR {dogfightWave}</span>
+              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-2.5 sm:p-3 text-center">
+                <span className="text-[9px] sm:text-[10px] text-slate-500 block">SECTOR REACHED</span>
+                <span className="text-base sm:text-lg font-bold text-cyan-400">SECTOR {dogfightWave}</span>
               </div>
-              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-center">
-                <span className="text-[10px] text-slate-500 block">VESSELS DESTROYED</span>
-                <span className="text-lg font-bold text-emerald-400">{dogfightKills} KILLS</span>
+              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-2.5 sm:p-3 text-center">
+                <span className="text-[9px] sm:text-[10px] text-slate-500 block">VESSELS DESTROYED</span>
+                <span className="text-base sm:text-lg font-bold text-emerald-400">{dogfightKills} KILLS</span>
               </div>
             </div>
 

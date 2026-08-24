@@ -50,9 +50,11 @@ export const DroneCamera = () => {
       return;
     }
 
-    // Dynamic camera tracking based on position and yaw angle
-    const distance = 12.0;
-    const height = 5.8;
+    // Dynamic camera tracking based on position, yaw angle, and viewport aspect ratio
+    const aspect = state.size.width / state.size.height;
+    const isPortrait = aspect < 1.0;
+    const distance = isPortrait ? 15.5 : 12.0;
+    const height = isPortrait ? 7.0 : 5.8;
 
     const idealOffset = new THREE.Vector3(
       px - Math.sin(ry) * distance,
@@ -61,9 +63,9 @@ export const DroneCamera = () => {
     );
 
     const idealLookAt = new THREE.Vector3(
-      px + Math.sin(ry) * 8,
-      py + 1.2,
-      pz + Math.cos(ry) * 8
+      px + Math.sin(ry) * (isPortrait ? 6 : 8),
+      py + (isPortrait ? 1.5 : 1.2),
+      pz + Math.cos(ry) * (isPortrait ? 6 : 8)
     );
 
     // Fast, responsive camera tracking

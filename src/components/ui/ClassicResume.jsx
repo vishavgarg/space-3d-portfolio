@@ -18,39 +18,39 @@ export const ClassicResume = () => {
   const setClassicMode = useUIStore((s) => s.setClassicMode);
 
   return (
-    <div className="fixed inset-0 z-50 h-screen w-screen bg-[#070a12] text-slate-100 p-4 sm:p-8 md:p-12 overflow-y-auto font-sans selection:bg-cyan-500 selection:text-black">
-      <div className="max-w-4xl mx-auto space-y-8 bg-[#0f172a] p-6 sm:p-10 md:p-12 rounded-3xl border border-slate-800 shadow-2xl mb-24">
+    <div className="fixed inset-0 z-50 h-screen w-screen bg-[#070a12] text-slate-100 p-3 sm:p-8 md:p-12 overflow-y-auto font-sans selection:bg-cyan-500 selection:text-black touch-scroll pt-safe pb-safe">
+      <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8 bg-[#0f172a] p-4 sm:p-10 md:p-12 rounded-3xl border border-slate-800 shadow-2xl mb-24">
         {/* Top Header Navigation */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-slate-800 print:hidden">
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-5 sm:pb-6 border-b border-slate-800 print:hidden">
           <button
             onClick={() => setClassicMode(false)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold font-mono text-xs shadow-lg transition-all active:scale-95 cursor-pointer"
+            className="flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold font-mono text-xs shadow-lg transition-all active:scale-95 cursor-pointer"
           >
-            <Compass className="w-4 h-4" />
-            <span>RETURN TO 3D INTERACTIVE WORLD</span>
+            <Compass className="w-4 h-4 shrink-0" />
+            <span>RETURN TO 3D WORLD</span>
           </button>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => window.print()}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono border border-slate-700 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono border border-slate-700 transition-all cursor-pointer"
             >
               <Printer className="w-4 h-4" />
-              <span>PRINT / SAVE PDF</span>
+              <span>PRINT / PDF</span>
             </button>
           </div>
         </div>
 
         {/* Resume Header */}
-        <div className="space-y-3">
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white font-sans">
+        <div className="space-y-2.5 sm:space-y-3">
+          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white font-sans">
             {aboutData.name}
           </h1>
-          <p className="text-sm sm:text-base font-mono text-cyan-400 font-semibold">
+          <p className="text-xs sm:text-base font-mono text-cyan-400 font-semibold">
             {aboutData.title}
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-slate-400 pt-1">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[11px] sm:text-xs font-mono text-slate-400 pt-1">
             <span className="flex items-center gap-1.5">
               <Mail className="w-3.5 h-3.5 text-cyan-400" />
               <a href={`mailto:${aboutData.email}`} className="hover:text-white transition-colors">{aboutData.email}</a>

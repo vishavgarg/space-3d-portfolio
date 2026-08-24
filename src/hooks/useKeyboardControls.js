@@ -114,12 +114,20 @@ export const useKeyboardControls = () => {
       }
     };
 
+    const handleCustomFlightControl = (e) => {
+      if (e.detail && e.detail.action) {
+        setKeys((k) => ({ ...k, [e.detail.action]: !!e.detail.active }));
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('flight-control', handleCustomFlightControl);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('flight-control', handleCustomFlightControl);
     };
   }, []);
 

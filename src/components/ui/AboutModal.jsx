@@ -23,27 +23,27 @@ export const AboutModal = () => {
   if (activeModal !== 'about') return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200 pt-safe pb-safe">
       <div className="relative w-full max-w-3xl bg-[#0f172a] border border-cyan-500/40 rounded-3xl shadow-[0_0_50px_rgba(0,240,255,0.2)] overflow-hidden flex flex-col my-auto max-h-[90vh]">
         {/* Modal Header */}
-        <div className="p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-purple-950/40 to-slate-900 border-b border-slate-800 flex items-start justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 to-purple-600 p-0.5 shadow-lg">
-              <div className="w-full h-full bg-slate-950 rounded-2xl flex items-center justify-center font-mono font-bold text-2xl text-cyan-400">
+        <div className="p-4 sm:p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-purple-950/40 to-slate-900 border-b border-slate-800 flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 to-purple-600 p-0.5 shadow-lg shrink-0">
+              <div className="w-full h-full bg-slate-950 rounded-2xl flex items-center justify-center font-mono font-bold text-xl sm:text-2xl text-cyan-400">
                 VG
               </div>
             </div>
             <div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-sans">{aboutData.name}</h2>
+              <h2 className="text-xl sm:text-3xl font-extrabold text-white font-sans">{aboutData.name}</h2>
               <p className="text-xs sm:text-sm font-mono text-cyan-400 mt-0.5">{aboutData.title}</p>
-              <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-1.5 text-xs text-slate-400">
                 <span className="flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-pink-400" />
+                  <MapPin className="w-3.5 h-3.5 text-pink-400 shrink-0" />
                   {aboutData.location}
                 </span>
                 <span className="flex items-center gap-1">
-                  <Award className="w-3.5 h-3.5 text-amber-400" />
-                  {aboutData.experienceYears} Experience
+                  <Award className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  {aboutData.experienceYears} Exp
                 </span>
               </div>
             </div>
@@ -51,14 +51,15 @@ export const AboutModal = () => {
 
           <button
             onClick={closeModal}
-            className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="p-2 sm:p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0 min-w-[40px] min-h-[40px] flex items-center justify-center"
+            aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Content Body */}
-        <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-sm text-slate-300 font-sans leading-relaxed">
+        <div className="p-4 sm:p-6 sm:p-8 overflow-y-auto touch-scroll space-y-5 sm:space-y-6 text-xs sm:text-sm text-slate-300 font-sans leading-relaxed">
           {/* Executive Summary */}
           <div>
             <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 mb-2">

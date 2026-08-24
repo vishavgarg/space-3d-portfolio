@@ -20,66 +20,67 @@ export const ProjectsGalleryModal = () => {
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200 pt-safe pb-safe">
       <div className="relative w-full max-w-4xl bg-[#0f172a] border border-blue-500/40 rounded-3xl shadow-[0_0_60px_rgba(59,130,246,0.2)] overflow-hidden flex flex-col my-auto max-h-[90vh]">
         {/* Header */}
-        <div className="p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-blue-950/30 to-slate-900 border-b border-slate-800 flex items-start justify-between">
+        <div className="p-4 sm:p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-blue-950/30 to-slate-900 border-b border-slate-800 flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-sans flex items-center gap-3">
-              <Briefcase className="w-7 h-7 text-blue-400" />
-              Featured Engineering Portfolio
+            <h2 className="text-xl sm:text-3xl font-extrabold text-white font-sans flex items-center gap-2.5 sm:gap-3">
+              <Briefcase className="w-6 h-6 sm:w-7 sm:h-7 text-blue-400 shrink-0" />
+              <span>Engineering Portfolio</span>
             </h2>
             <p className="text-xs sm:text-sm font-mono text-slate-400 mt-1">
-              Select any project to explore full architectural breakdowns, problems solved, and tech stacks.
+              Select any project to explore architectural breakdowns, problems solved, and tech stacks.
             </p>
           </div>
 
           <button
             onClick={closeModal}
-            className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="p-2 sm:p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0 min-w-[40px] min-h-[40px] flex items-center justify-center"
+            aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Filter Pills */}
-        <div className="px-6 sm:px-8 py-3 bg-slate-900/50 border-b border-slate-800/80 flex items-center gap-2 overflow-x-auto text-xs font-mono">
+        <div className="px-4 sm:px-8 py-2.5 sm:py-3 bg-slate-900/50 border-b border-slate-800/80 flex items-center gap-2 overflow-x-auto no-scrollbar text-xs font-mono touch-scroll">
           <button
             onClick={() => setFilter('all')}
-            className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               filter === 'all' ? 'bg-blue-600 text-white font-bold' : 'bg-slate-800 text-slate-400 hover:text-white'
             }`}
           >
-            ALL PROJECTS ({projectsData.length})
+            ALL ({projectsData.length})
           </button>
           <button
             onClick={() => setFilter('enterprise')}
-            className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               filter === 'enterprise' ? 'bg-cyan-600 text-white font-bold' : 'bg-slate-800 text-slate-400 hover:text-white'
             }`}
           >
-            ENTERPRISE / FORTUNE 500
+            ENTERPRISE
           </button>
           <button
             onClick={() => setFilter('solo')}
-            className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               filter === 'solo' ? 'bg-amber-600 text-white font-bold' : 'bg-slate-800 text-slate-400 hover:text-white'
             }`}
           >
-            FLAGSHIP SOLO BUILDS
+            SOLO BUILDS
           </button>
           <button
             onClick={() => setFilter('ai')}
-            className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-xl transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               filter === 'ai' ? 'bg-purple-600 text-white font-bold' : 'bg-slate-800 text-slate-400 hover:text-white'
             }`}
           >
-            AI & WORKFLOW SYSTEMS
+            AI SYSTEMS
           </button>
         </div>
 
         {/* Projects Grid */}
-        <div className="p-6 sm:p-8 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-4 sm:p-6 sm:p-8 overflow-y-auto touch-scroll grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
           {filteredProjects.map((proj) => (
             <div
               key={proj.id}

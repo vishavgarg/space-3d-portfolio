@@ -17,14 +17,14 @@ export const SkillsModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200 pt-safe pb-safe">
       <div className="relative w-full max-w-4xl bg-[#0f172a] border border-emerald-500/40 rounded-3xl shadow-[0_0_60px_rgba(16,185,129,0.2)] overflow-hidden flex flex-col my-auto max-h-[90vh]">
         {/* Header */}
-        <div className="p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-emerald-950/30 to-slate-900 border-b border-slate-800 flex items-start justify-between">
+        <div className="p-4 sm:p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-emerald-950/30 to-slate-900 border-b border-slate-800 flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-sans flex items-center gap-3">
-              <Crosshair className="w-7 h-7 text-emerald-400" />
-              Technical Skill Architecture
+            <h2 className="text-xl sm:text-3xl font-extrabold text-white font-sans flex items-center gap-2.5 sm:gap-3">
+              <Crosshair className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-400 shrink-0" />
+              <span>Skill Architecture</span>
             </h2>
             <p className="text-xs sm:text-sm font-mono text-slate-400 mt-1">
               Production-tested proficiencies, core competencies, and associated enterprise projects.
@@ -33,14 +33,15 @@ export const SkillsModal = () => {
 
           <button
             onClick={closeModal}
-            className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="p-2 sm:p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0 min-w-[40px] min-h-[40px] flex items-center justify-center"
+            aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-6 sm:p-8 overflow-y-auto space-y-8 text-sm font-sans">
+        <div className="p-4 sm:p-6 sm:p-8 overflow-y-auto touch-scroll space-y-6 sm:space-y-8 text-xs sm:text-sm font-sans">
           {skillsData.categories.map((cat) => (
             <div key={cat.id}>
               <div className="flex items-center gap-2.5 mb-4 pb-2 border-b border-slate-800">

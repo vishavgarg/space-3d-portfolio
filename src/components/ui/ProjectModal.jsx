@@ -20,41 +20,42 @@ export const ProjectModal = () => {
   if (activeModal !== 'project' || !selectedProject) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200 pt-safe pb-safe">
       <div className="relative w-full max-w-4xl bg-[#0f172a] border border-cyan-500/40 rounded-3xl shadow-[0_0_60px_rgba(0,240,255,0.25)] overflow-hidden flex flex-col my-auto max-h-[90vh]">
         {/* Header */}
-        <div className="p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-800 flex items-start justify-between">
+        <div className="p-4 sm:p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-800 flex items-start justify-between gap-3">
           <div>
-            <div className="flex items-center gap-2.5 mb-2">
-              <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-cyan-950/80 border border-cyan-500/50 text-cyan-300">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-mono font-bold bg-cyan-950/80 border border-cyan-500/50 text-cyan-300">
                 {selectedProject.domain}
               </span>
-              <span className="px-3 py-1 rounded-full text-xs font-mono bg-purple-950/80 border border-purple-500/50 text-purple-300">
+              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-mono bg-purple-950/80 border border-purple-500/50 text-purple-300">
                 {selectedProject.badge}
               </span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-white font-sans tracking-tight">
+            <h2 className="text-xl sm:text-3xl font-black text-white font-sans tracking-tight">
               {selectedProject.title}
             </h2>
-            <div className="flex flex-wrap items-center gap-4 mt-2 text-xs font-mono text-slate-400">
-              <span>Client / Organization: <strong className="text-slate-200">{selectedProject.client}</strong></span>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-[11px] sm:text-xs font-mono text-slate-400">
+              <span>Client: <strong className="text-slate-200">{selectedProject.client}</strong></span>
               <span>•</span>
               <span>Role: <strong className="text-cyan-400">{selectedProject.role}</strong></span>
-              <span>•</span>
-              <span>Scale: <strong className="text-slate-200">{selectedProject.scale}</strong></span>
+              <span className="hidden sm:inline">•</span>
+              <span className="hidden sm:inline">Scale: <strong className="text-slate-200">{selectedProject.scale}</strong></span>
             </div>
           </div>
 
           <button
             onClick={closeModal}
-            className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0"
+            className="p-2 sm:p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0 min-w-[40px] min-h-[40px] flex items-center justify-center"
+            aria-label="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-6 sm:p-8 overflow-y-auto space-y-6 text-sm text-slate-300 font-sans leading-relaxed">
+        <div className="p-4 sm:p-6 sm:p-8 overflow-y-auto touch-scroll space-y-5 sm:space-y-6 text-xs sm:text-sm text-slate-300 font-sans leading-relaxed">
           {/* Executive Overview */}
           <div>
             <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 mb-2 flex items-center gap-2">

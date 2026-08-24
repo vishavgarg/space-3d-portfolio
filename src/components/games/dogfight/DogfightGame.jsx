@@ -418,13 +418,32 @@ export const DogfightGame = () => {
 
     spawnWaveEnemies(dogfightWave);
 
+    const updatePointerPos = (clientX, clientY) => {
+      mousePos.current.x = (clientX / window.innerWidth) * 2 - 1;
+      mousePos.current.y = -(clientY / window.innerHeight) * 2 + 1;
+    };
+
     const handleMouseMove = (e) => {
-      mousePos.current.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mousePos.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      updatePointerPos(e.clientX, e.clientY);
+    };
+
+    const handleTouchMove = (e) => {
+      if (e.touches && e.touches.length > 0) {
+        updatePointerPos(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+
+    const handleTouchStart = (e) => {
+      if (e.target.closest('button')) return;
+      if (e.touches && e.touches.length > 0) {
+        updatePointerPos(e.touches[0].clientX, e.touches[0].clientY);
+      }
+      fireLaser();
     };
 
     const handlePointerDown = (e) => {
       if (e.target.closest('button')) return;
+      updatePointerPos(e.clientX, e.clientY);
       fireLaser();
     };
 
@@ -435,11 +454,15 @@ export const DogfightGame = () => {
     };
 
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('pointerdown', handlePointerDown);
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('pointerdown', handlePointerDown);
       window.removeEventListener('keydown', handleKeyDown);
     };

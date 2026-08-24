@@ -28,17 +28,34 @@ export const WarpGateRace = () => {
   const [gates, setGates] = useState([]);
   const [speed, setSpeed] = useState(32);
 
-  // Track Mouse movement for pure steering
+  // Track Mouse & Touch movement for steering
   useEffect(() => {
     if (!warpRaceActive) return;
 
+    const updatePointerPos = (clientX, clientY) => {
+      mousePos.current.x = (clientX / window.innerWidth) * 2 - 1;
+      mousePos.current.y = -(clientY / window.innerHeight) * 2 + 1;
+    };
+
     const handleMouseMove = (e) => {
-      mousePos.current.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mousePos.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      updatePointerPos(e.clientX, e.clientY);
+    };
+
+    const handleTouchMove = (e) => {
+      if (e.touches && e.touches.length > 0) {
+        updatePointerPos(e.touches[0].clientX, e.touches[0].clientY);
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchstart', handleTouchMove, { passive: true });
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchstart', handleTouchMove);
+    };
   }, [warpRaceActive]);
 
   // Generate Warp Gates Along Spline Corridor
