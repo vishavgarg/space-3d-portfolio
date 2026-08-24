@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Crosshair, Trophy, Flame, Shield, Heart, X, RefreshCw, AlertTriangle, Zap } from 'lucide-react';
+import { Crosshair, Trophy, Flame, Shield, Heart, X, RefreshCw, AlertTriangle, Zap, Sparkles, Navigation } from 'lucide-react';
 import { useGameStore } from '../../../store/gameStore';
 
 export const DogfightHUD = () => {
@@ -15,6 +15,8 @@ export const DogfightHUD = () => {
   const dogfightLives = useGameStore((s) => s.dogfightLives ?? 3);
   const dogfightCombo = useGameStore((s) => s.dogfightCombo ?? 0);
   const dogfightDamageFlash = useGameStore((s) => s.dogfightDamageFlash ?? 0);
+  const dogfightIsWarping = useGameStore((s) => s.dogfightIsWarping);
+  const dogfightTransitionData = useGameStore((s) => s.dogfightTransitionData);
   const dogfightHighScore = useGameStore((s) => s.dogfightHighScore);
 
   const [mousePos, setMousePos] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
@@ -159,8 +161,59 @@ export const DogfightHUD = () => {
         )}
       </div>
 
-      {/* 4. Cinematic Sector Announcement Banner */}
-      {showSectorBanner && (
+      {/* 4. Cinematic Hyperspace Sector Warp Briefing (Tactical Pause) */}
+      {dogfightIsWarping && dogfightTransitionData && (
+        <div className="fixed inset-0 z-45 flex items-center justify-center pointer-events-none px-4 animate-in fade-in zoom-in duration-300">
+          <div className="relative max-w-md w-full bg-slate-950/95 border-2 border-cyan-400/80 rounded-3xl p-6 sm:p-7 text-center shadow-[0_0_60px_rgba(0,240,255,0.4)] backdrop-blur-2xl">
+            {/* Hyperspace Icon with animated glow */}
+            <div className="w-14 h-14 rounded-2xl bg-cyan-500/20 border border-cyan-400/60 mx-auto flex items-center justify-center mb-3.5 text-cyan-300 shadow-[0_0_30px_rgba(0,240,255,0.5)] animate-pulse">
+              <Navigation className="w-7 h-7 animate-spin" style={{ animationDuration: '3s' }} />
+            </div>
+
+            <span className="text-[11px] font-mono text-cyan-400 tracking-widest block font-bold uppercase mb-1">
+              ✨ SECTOR {dogfightTransitionData.prevWave} SECURED
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-white font-sans tracking-wide mb-3">
+              WARPING TO SECTOR {dogfightTransitionData.nextWave}
+            </h2>
+
+            {/* Victory Rewards Pills */}
+            <div className="flex items-center justify-center gap-2 mb-4 font-mono text-xs">
+              <span className="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 font-bold flex items-center gap-1">
+                <Trophy className="w-3.5 h-3.5" />
+                +{dogfightTransitionData.bonusPoints} PTS
+              </span>
+              <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-bold flex items-center gap-1">
+                <Shield className="w-3.5 h-3.5" />
+                +{dogfightTransitionData.actualRepaired} HP REPAIR
+              </span>
+            </div>
+
+            {/* Intel Briefing */}
+            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-xs font-mono text-slate-300 text-left mb-2">
+              <span className="text-cyan-400 font-bold block mb-0.5">📡 TACTICAL SENSOR INTEL:</span>
+              <span>
+                {dogfightTransitionData.nextWave === 2
+                  ? 'Sector 2: Assault Raiders detected — Strike fighters with twin alternating plasma bursts (2 HP).'
+                  : dogfightTransitionData.nextWave === 3
+                  ? 'Sector 3: Stealth Phantoms detected — Evasive corkscrew interceptors with rapid pulse cannons (2 HP).'
+                  : dogfightTransitionData.nextWave === 4
+                  ? 'Sector 4: Cyber Gunships deployed — Heavy armored siege destroyers with 3-way spread plasma (4 HP).'
+                  : dogfightTransitionData.nextWave === 5
+                  ? 'Sector 5: Leviathan Flagship incoming — Dreadnought command titan with 4-way heavy spread barrages (6 HP)!'
+                  : 'Sector ' + dogfightTransitionData.nextWave + ': Elite Chaos Armada — All enemy classes deployed with maximum aggression!'}
+              </span>
+            </div>
+
+            <span className="text-[10px] font-mono text-slate-500 animate-pulse block">
+              JUMPING HYPERSPACE IN 3... 2... 1...
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* 5. Cinematic Sector Announcement Banner */}
+      {showSectorBanner && !dogfightIsWarping && (
         <div className="fixed top-24 sm:top-28 inset-x-0 flex justify-center pointer-events-none px-4 animate-in fade-in zoom-in duration-300">
           <div className="px-6 sm:px-8 py-2.5 sm:py-3 rounded-2xl bg-slate-950/95 border-2 border-pink-500 shadow-[0_0_40px_rgba(236,72,153,0.4)] backdrop-blur-xl text-center max-w-sm sm:max-w-md">
             <span className="text-[10px] sm:text-[11px] font-mono text-pink-400 tracking-widest block font-bold">
@@ -171,10 +224,14 @@ export const DogfightHUD = () => {
             </h2>
             <span className="text-[11px] sm:text-xs font-mono text-slate-300 block mt-1">
               {dogfightWave === 2
-                ? 'Assault Raiders in formation — Prepare for enemy fire!'
+                ? 'Assault Raiders in formation — Prepare for twin plasma fire!'
                 : dogfightWave === 3
-                ? 'Dreadnought Flagship detected — Heavy armor & spread plasma!'
-                : 'Elite squadrons inbound — Maximum evasive maneuvers!'}
+                ? 'Stealth Phantoms detected — Watch for evasive corkscrew attacks!'
+                : dogfightWave === 4
+                ? 'Cyber Siege Gunships inbound — Heavy 3-way plasma spread!'
+                : dogfightWave === 5
+                ? 'Leviathan Flagship Boss — Heavy armor & quad plasma cannons!'
+                : 'Elite Armada — Maximum tactical focus required!'}
             </span>
           </div>
         </div>

@@ -26,6 +26,8 @@ export const useGameStore = create((set, get) => ({
   dogfightCombo: 0,
   dogfightLastKillTime: 0,
   dogfightDamageFlash: 0,
+  dogfightIsWarping: false,
+  dogfightTransitionData: null,
   dogfightHighScore: parseInt(localStorage.getItem('vg_dogfight_high_score') || '0', 10),
 
   // Warp Gate Race State
@@ -52,6 +54,8 @@ export const useGameStore = create((set, get) => ({
       dogfightGameOver: false,
       dogfightCombo: 0,
       dogfightDamageFlash: 0,
+      dogfightIsWarping: false,
+      dogfightTransitionData: null,
       dogfightTimeRemaining: 60
     });
   },
@@ -73,13 +77,15 @@ export const useGameStore = create((set, get) => ({
       dogfightActive: false,
       activeMiniGame: null,
       dogfightGameOver: false,
+      dogfightIsWarping: false,
+      dogfightTransitionData: null,
       dogfightHighScore: newHigh
     });
   },
 
   takeDogfightDamage: (amount = 20) => {
-    const { dogfightHealth, dogfightLives, dogfightGameOver, endDogfight } = get();
-    if (dogfightGameOver) return;
+    const { dogfightHealth, dogfightLives, dogfightGameOver, dogfightIsWarping } = get();
+    if (dogfightGameOver || dogfightIsWarping) return;
 
     soundEngine.playPlayerDamage();
     const newHealth = Math.max(0, dogfightHealth - amount);
@@ -132,6 +138,35 @@ export const useGameStore = create((set, get) => ({
       dogfightLastKillTime: now,
       dogfightHighScore: newHigh
     });
+  },
+
+  triggerSectorTransition: (nextWave) => {
+    const { dogfightScore, dogfightHealth, dogfightWave } = get();
+    soundEngine.playWaveStart();
+
+    const bonusPoints = 500;
+    const repairedHealth = Math.min(100, dogfightHealth + 10);
+    const actualRepaired = Math.round(repairedHealth - dogfightHealth);
+
+    set({
+      dogfightIsWarping: true,
+      dogfightScore: dogfightScore + bonusPoints,
+      dogfightHealth: repairedHealth,
+      dogfightTransitionData: {
+        prevWave: dogfightWave,
+        nextWave,
+        bonusPoints,
+        actualRepaired
+      }
+    });
+
+    setTimeout(() => {
+      set({
+        dogfightWave: nextWave,
+        dogfightIsWarping: false,
+        dogfightTransitionData: null
+      });
+    }, 2800);
   },
 
   setDogfightWave: (wave) => {

@@ -2,11 +2,13 @@ import React, { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { usePlayerStore } from '../../store/playerStore';
+import { useUIStore } from '../../store/uiStore';
 
 export const DroneCamera = () => {
   const playerPosition = usePlayerStore((s) => s.position);
   const playerRotation = usePlayerStore((s) => s.rotation);
   const resetTrigger = usePlayerStore((s) => s.resetTrigger);
+  const hasStartedExperience = useUIStore((s) => s.hasStartedExperience);
 
   // Initial High-Altitude Vista camera above Contact Island
   const currentCamPos = useRef(new THREE.Vector3(0, 24, 68));
@@ -23,10 +25,26 @@ export const DroneCamera = () => {
   }, [resetTrigger]);
 
   useFrame((state, delta) => {
+    // 1. Ambient Cinematic Orbit while visitor is on the Landing Command Deck
+    if (!hasStartedExperience) {
+      const angle = state.clock.elapsedTime * 0.12;
+      const radius = 64;
+      const camX = Math.sin(angle) * radius;
+      const camZ = Math.cos(angle) * (radius * 0.85) + 12;
+      const camY = 22 + Math.sin(angle * 0.6) * 5;
+
+      currentCamPos.current.lerp(new THREE.Vector3(camX, camY, camZ), delta * 3);
+      currentLookAt.current.lerp(new THREE.Vector3(0, 5, 0), delta * 3);
+
+      state.camera.position.copy(currentCamPos.current);
+      state.camera.lookAt(currentLookAt.current);
+      return;
+    }
+
     const [px, py, pz] = playerPosition;
     const [, ry] = playerRotation;
 
-    // Cinematic Intro Fly-in for first 1.8 seconds
+    // Cinematic Intro Fly-in for first 1.8 seconds after starting
     if (!isIntroComplete.current) {
       introTime.current += delta;
       const t = Math.min(introTime.current / 1.8, 1);
