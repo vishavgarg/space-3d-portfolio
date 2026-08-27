@@ -41,7 +41,7 @@ export const LoadingScreen = () => {
   const [progress, setProgress] = useState(0);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [isRecruiterModalOpen, setIsRecruiterModalOpen] = useState(false);
-  const [activeRightView, setActiveRightView] = useState('ship'); // 'ship' | 'gateways'
+  const [activeRightView, setActiveRightView] = useState('gateways'); // 'gateways' | 'ship'
 
   // Global Stores
   const startExperience = useUIStore((s) => s.startExperience);
@@ -290,25 +290,10 @@ export const LoadingScreen = () => {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: INTERACTIVE TELEMETRY & LIVE FLIGHT DECK (5 COLS) */}
-        <div className="lg:col-span-5 flex flex-col gap-4">
-          {/* Stage View Switcher */}
+        {/* RIGHT COLUMN: STABLE LIVE FLIGHT DECK (5 COLS) */}
+        <div className="lg:col-span-5 flex flex-col gap-3.5">
+          {/* Stage View Switcher - Warp Gateways First */}
           <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06] w-full">
-            <button
-              onClick={() => {
-                soundEngine.playClick();
-                setActiveRightView('ship');
-              }}
-              className={`flex-1 py-1.5 px-3 rounded-lg font-mono text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                activeRightView === 'ship'
-                  ? 'bg-white text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Rocket className="w-3.5 h-3.5" />
-              <span>STARFLEET CHASSIS</span>
-            </button>
-
             <button
               onClick={() => {
                 soundEngine.playClick();
@@ -323,190 +308,211 @@ export const LoadingScreen = () => {
               <Zap className="w-3.5 h-3.5" />
               <span>WARP GATEWAYS</span>
             </button>
+
+            <button
+              onClick={() => {
+                soundEngine.playClick();
+                setActiveRightView('ship');
+              }}
+              className={`flex-1 py-1.5 px-3 rounded-lg font-mono text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                activeRightView === 'ship'
+                  ? 'bg-white text-slate-950 shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Rocket className="w-3.5 h-3.5" />
+              <span>STARFLEET CHASSIS</span>
+            </button>
           </div>
 
-          {/* VIEW A: STARFLEET FLIGHT CHASSIS & SPECTRAL TUNER */}
-          {activeRightView === 'ship' && (
-            <div className="rounded-2xl p-1 bg-white/[0.04] border border-white/[0.08] shadow-2xl">
-              <div className="rounded-xl p-5 bg-[#080d18]/90">
-                {/* Header */}
-                <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.06]">
-                  <div className="flex items-center gap-2">
-                    <Sliders className="w-4 h-4 text-[#f5d061]" />
-                    <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                      Flight Configurator
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    {thrusterColorPresets.map((preset) => (
+          {/* STABLE-HEIGHT RIGHT CARD CONTAINER (PREVENTS VERTICAL LAYOUT SHIFTING) */}
+          <div className="rounded-2xl p-1 bg-white/[0.04] border border-white/[0.08] shadow-2xl min-h-[385px] flex flex-col justify-between">
+            <div className="rounded-xl p-5 bg-[#080d18]/90 min-h-[377px] flex flex-col justify-between">
+              {/* VIEW 1: DIRECT WARP GATEWAYS (DEFAULT & FIRST) */}
+              {activeRightView === 'gateways' && (
+                <div className="flex flex-col justify-between h-full animate-in fade-in duration-200">
+                  <div>
+                    <div className="pb-3 mb-3 border-b border-white/[0.06] flex items-center justify-between">
+                      <span className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <Zap className="w-4 h-4 text-cyan-400" />
+                        Direct Teleport Gateways
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400">1-CLICK JUMP</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-3.5">
                       <button
-                        key={preset.id}
-                        onClick={() => handleSelectThruster(preset.hex)}
-                        className={`w-5 h-5 rounded-full transition-all cursor-pointer ${
-                          thrusterColor === preset.hex
-                            ? 'scale-125 ring-2 ring-white shadow-[0_0_8px_currentColor]'
-                            : 'opacity-60 hover:opacity-100'
-                        }`}
-                        style={{ backgroundColor: preset.hex, color: preset.hex }}
-                        title={preset.name}
-                      />
-                    ))}
+                        onClick={() => handleDirectWarp('projects')}
+                        className="p-3 rounded-xl bg-black/30 border border-white/[0.06] hover:border-cyan-400/40 text-left transition-all active:scale-[0.98] cursor-pointer group"
+                      >
+                        <div className="flex items-center justify-between text-cyan-400 text-xs font-mono font-bold mb-1">
+                          <span>PROJECTS HUB</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-tight">
+                          Toyota TMNA, P&G Pampers, PC Builder 3D
+                        </p>
+                      </button>
+
+                      <button
+                        onClick={() => handleDirectWarp('skills')}
+                        className="p-3 rounded-xl bg-black/30 border border-white/[0.06] hover:border-emerald-400/40 text-left transition-all active:scale-[0.98] cursor-pointer group"
+                      >
+                        <div className="flex items-center justify-between text-emerald-400 text-xs font-mono font-bold mb-1">
+                          <span>SKILLS ARENA</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-tight">
+                          React 19, Three.js, TypeScript, Cloud
+                        </p>
+                      </button>
+
+                      <button
+                        onClick={() => handleDirectWarp('experience')}
+                        className="p-3 rounded-xl bg-black/30 border border-white/[0.06] hover:border-[#f5d061]/40 text-left transition-all active:scale-[0.98] cursor-pointer group"
+                      >
+                        <div className="flex items-center justify-between text-[#f5d061] text-xs font-mono font-bold mb-1">
+                          <span>CAREER ROAD</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-tight">
+                          6+ Years timeline across top agencies
+                        </p>
+                      </button>
+
+                      <button
+                        onClick={() => handleDirectWarp('contact')}
+                        className="p-3 rounded-xl bg-black/30 border border-white/[0.06] hover:border-rose-400/40 text-left transition-all active:scale-[0.98] cursor-pointer group"
+                      >
+                        <div className="flex items-center justify-between text-rose-400 text-xs font-mono font-bold mb-1">
+                          <span>CONTACT SPIRE</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                        </div>
+                        <p className="text-[11px] text-slate-400 leading-tight">
+                          Direct messaging and hire inquiry
+                        </p>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Mini Arcade Launcher */}
+                  <div className="grid grid-cols-2 gap-2 pt-3 border-t border-white/[0.04]">
+                    <button
+                      onClick={handleStartDogfight}
+                      disabled={!isReady}
+                      className="py-2.5 px-3 rounded-lg bg-purple-950/40 hover:bg-purple-900/60 border border-purple-500/30 text-purple-200 text-xs font-mono flex items-center justify-between active:scale-[0.98] cursor-pointer transition-all"
+                    >
+                      <span className="font-semibold">DOGFIGHT ARCADE</span>
+                      <span className="text-[10px] text-purple-400">{dogfightHighScore} PTS</span>
+                    </button>
+
+                    <button
+                      onClick={handleStartWarpRace}
+                      disabled={!isReady}
+                      className="py-2.5 px-3 rounded-lg bg-amber-950/40 hover:bg-amber-900/60 border border-amber-500/30 text-amber-200 text-xs font-mono flex items-center justify-between active:scale-[0.98] cursor-pointer transition-all"
+                    >
+                      <span className="font-semibold">WARP GATE RACE</span>
+                      <span className="text-[10px] text-amber-400">{warpRaceHighScore} PTS</span>
+                    </button>
                   </div>
                 </div>
+              )}
 
-                {/* Ship Chassis Selection Cards */}
-                <div className="space-y-2.5 mb-4">
-                  {shipClasses.map((ship) => {
-                    const isSelected = selectedShip === ship.id;
-                    return (
-                      <div
-                        key={ship.id}
-                        onClick={() => handleSelectShip(ship.id)}
-                        className={`p-3 rounded-xl border transition-all cursor-pointer ${
-                          isSelected
-                            ? 'bg-white/[0.06] border-white/20 shadow-md'
-                            : 'bg-black/30 border-white/[0.04] hover:border-white/[0.1]'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-white font-sans">{ship.name}</span>
-                            <span className="text-[10px] font-mono text-slate-400">{ship.tagline}</span>
-                          </div>
-                          {isSelected && (
-                            <span className="px-2 py-0.5 rounded-full bg-white text-slate-950 text-[9px] font-mono font-bold">
-                              SELECTED
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Telemetry Bars */}
-                        <div className="grid grid-cols-3 gap-2 mt-2 pt-2 border-t border-white/[0.04] text-[9px] font-mono text-slate-400">
-                          <div>
-                            <span>Speed {ship.stats.speed}%</span>
-                            <div className="w-full bg-slate-800 h-1 rounded-full mt-0.5 overflow-hidden">
-                              <div className="bg-white h-full" style={{ width: `${ship.stats.speed}%` }} />
-                            </div>
-                          </div>
-                          <div>
-                            <span>Agility {ship.stats.handling}%</span>
-                            <div className="w-full bg-slate-800 h-1 rounded-full mt-0.5 overflow-hidden">
-                              <div className="bg-[#f5d061] h-full" style={{ width: `${ship.stats.handling}%` }} />
-                            </div>
-                          </div>
-                          <div>
-                            <span>Armor {ship.stats.shielding}%</span>
-                            <div className="w-full bg-slate-800 h-1 rounded-full mt-0.5 overflow-hidden">
-                              <div className="bg-cyan-400 h-full" style={{ width: `${ship.stats.shielding}%` }} />
-                            </div>
-                          </div>
-                        </div>
+              {/* VIEW 2: STARFLEET FLIGHT CHASSIS & SPECTRAL TUNER */}
+              {activeRightView === 'ship' && (
+                <div className="flex flex-col justify-between h-full animate-in fade-in duration-200">
+                  <div>
+                    {/* Header */}
+                    <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.06]">
+                      <div className="flex items-center gap-2">
+                        <Sliders className="w-4 h-4 text-[#f5d061]" />
+                        <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                          Flight Configurator
+                        </span>
                       </div>
-                    );
-                  })}
-                </div>
-
-                {/* Quick Launch */}
-                <button
-                  onClick={handleFreeRoam}
-                  disabled={!isReady}
-                  className="w-full py-2.5 px-4 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-white border border-white/[0.12] font-mono font-bold text-xs tracking-wider flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer disabled:opacity-50 transition-all"
-                >
-                  <Rocket className="w-3.5 h-3.5 text-[#f5d061]" />
-                  <span>LAUNCH WITH {activeShipData.name.toUpperCase()}</span>
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* VIEW B: DIRECT WARP GATEWAYS */}
-          {activeRightView === 'gateways' && (
-            <div className="rounded-2xl p-1 bg-white/[0.04] border border-white/[0.08] shadow-2xl">
-              <div className="rounded-xl p-5 bg-[#080d18]/90">
-                <div className="pb-3 mb-3 border-b border-white/[0.06]">
-                  <span className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-cyan-400" />
-                    Direct Teleport Gateways
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-3">
-                  <button
-                    onClick={() => handleDirectWarp('projects')}
-                    className="p-3 rounded-xl bg-black/30 border border-white/[0.06] hover:border-cyan-400/40 text-left transition-all active:scale-[0.98] cursor-pointer group"
-                  >
-                    <div className="flex items-center justify-between text-cyan-400 text-xs font-mono font-bold mb-1">
-                      <span>PROJECTS HUB</span>
-                      <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                      <div className="flex items-center gap-1.5">
+                        {thrusterColorPresets.map((preset) => (
+                          <button
+                            key={preset.id}
+                            onClick={() => handleSelectThruster(preset.hex)}
+                            className={`w-5 h-5 rounded-full transition-all cursor-pointer ${
+                              thrusterColor === preset.hex
+                                ? 'scale-125 ring-2 ring-white shadow-[0_0_8px_currentColor]'
+                                : 'opacity-60 hover:opacity-100'
+                            }`}
+                            style={{ backgroundColor: preset.hex, color: preset.hex }}
+                            title={preset.name}
+                          />
+                        ))}
+                      </div>
                     </div>
-                    <p className="text-[11px] text-slate-400 leading-tight">
-                      Toyota TMNA, P&G Pampers, PC Builder 3D
-                    </p>
-                  </button>
 
-                  <button
-                    onClick={() => handleDirectWarp('skills')}
-                    className="p-3 rounded-xl bg-black/30 border border-white/[0.06] hover:border-emerald-400/40 text-left transition-all active:scale-[0.98] cursor-pointer group"
-                  >
-                    <div className="flex items-center justify-between text-emerald-400 text-xs font-mono font-bold mb-1">
-                      <span>SKILLS ARENA</span>
-                      <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    {/* Ship Chassis Selection Cards */}
+                    <div className="space-y-2 mb-3">
+                      {shipClasses.map((ship) => {
+                        const isSelected = selectedShip === ship.id;
+                        return (
+                          <div
+                            key={ship.id}
+                            onClick={() => handleSelectShip(ship.id)}
+                            className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                              isSelected
+                                ? 'bg-white/[0.06] border-white/20 shadow-md'
+                                : 'bg-black/30 border-white/[0.04] hover:border-white/[0.1]'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-bold text-white font-sans">{ship.name}</span>
+                                <span className="text-[10px] font-mono text-slate-400">{ship.tagline}</span>
+                              </div>
+                              {isSelected && (
+                                <span className="px-2 py-0.5 rounded-full bg-white text-slate-950 text-[9px] font-mono font-bold">
+                                  SELECTED
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Telemetry Bars */}
+                            <div className="grid grid-cols-3 gap-2 mt-1.5 pt-1.5 border-t border-white/[0.04] text-[9px] font-mono text-slate-400">
+                              <div>
+                                <span>Speed {ship.stats.speed}%</span>
+                                <div className="w-full bg-slate-800 h-1 rounded-full mt-0.5 overflow-hidden">
+                                  <div className="bg-white h-full" style={{ width: `${ship.stats.speed}%` }} />
+                                </div>
+                              </div>
+                              <div>
+                                <span>Agility {ship.stats.handling}%</span>
+                                <div className="w-full bg-slate-800 h-1 rounded-full mt-0.5 overflow-hidden">
+                                  <div className="bg-[#f5d061] h-full" style={{ width: `${ship.stats.handling}%` }} />
+                                </div>
+                              </div>
+                              <div>
+                                <span>Armor {ship.stats.shielding}%</span>
+                                <div className="w-full bg-slate-800 h-1 rounded-full mt-0.5 overflow-hidden">
+                                  <div className="bg-cyan-400 h-full" style={{ width: `${ship.stats.shielding}%` }} />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                    <p className="text-[11px] text-slate-400 leading-tight">
-                      React 19, Three.js, TypeScript, Cloud
-                    </p>
-                  </button>
+                  </div>
 
+                  {/* Quick Launch */}
                   <button
-                    onClick={() => handleDirectWarp('experience')}
-                    className="p-3 rounded-xl bg-black/30 border border-white/[0.06] hover:border-[#f5d061]/40 text-left transition-all active:scale-[0.98] cursor-pointer group"
-                  >
-                    <div className="flex items-center justify-between text-[#f5d061] text-xs font-mono font-bold mb-1">
-                      <span>CAREER ROAD</span>
-                      <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                    </div>
-                    <p className="text-[11px] text-slate-400 leading-tight">
-                      6+ Years timeline across top agencies
-                    </p>
-                  </button>
-
-                  <button
-                    onClick={() => handleDirectWarp('contact')}
-                    className="p-3 rounded-xl bg-black/30 border border-white/[0.06] hover:border-rose-400/40 text-left transition-all active:scale-[0.98] cursor-pointer group"
-                  >
-                    <div className="flex items-center justify-between text-rose-400 text-xs font-mono font-bold mb-1">
-                      <span>CONTACT SPIRE</span>
-                      <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                    </div>
-                    <p className="text-[11px] text-slate-400 leading-tight">
-                      Direct messaging and hire inquiry
-                    </p>
-                  </button>
-                </div>
-
-                {/* Mini Arcade Launcher */}
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/[0.04]">
-                  <button
-                    onClick={handleStartDogfight}
+                    onClick={handleFreeRoam}
                     disabled={!isReady}
-                    className="py-2 px-2.5 rounded-lg bg-purple-950/40 hover:bg-purple-900/60 border border-purple-500/30 text-purple-200 text-[11px] font-mono flex items-center justify-between active:scale-[0.98] cursor-pointer"
+                    className="w-full py-2.5 px-4 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-white border border-white/[0.12] font-mono font-bold text-xs tracking-wider flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer disabled:opacity-50 transition-all pt-2"
                   >
-                    <span>DOGFIGHT ARCADE</span>
-                    <span className="text-[9px] text-purple-400">{dogfightHighScore} PTS</span>
-                  </button>
-
-                  <button
-                    onClick={handleStartWarpRace}
-                    disabled={!isReady}
-                    className="py-2 px-2.5 rounded-lg bg-amber-950/40 hover:bg-amber-900/60 border border-amber-500/30 text-amber-200 text-[11px] font-mono flex items-center justify-between active:scale-[0.98] cursor-pointer"
-                  >
-                    <span>WARP GATE RACE</span>
-                    <span className="text-[9px] text-amber-400">{warpRaceHighScore} PTS</span>
+                    <Rocket className="w-3.5 h-3.5 text-[#f5d061]" />
+                    <span>LAUNCH WITH {activeShipData.name.toUpperCase()}</span>
                   </button>
                 </div>
-              </div>
+              )}
             </div>
-          )}
+          </div>
 
           {/* Engine Initialization Bar */}
           <div className="w-full">

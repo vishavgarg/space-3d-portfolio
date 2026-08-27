@@ -19,6 +19,7 @@ export const AboutModal = () => {
   const activeModal = useUIStore((s) => s.activeModal);
   const closeModal = useUIStore((s) => s.closeModal);
   const showToast = useUIStore((s) => s.showToast);
+  const setClassicMode = useUIStore((s) => s.setClassicMode);
 
   if (activeModal !== 'about') return null;
 
@@ -139,13 +140,14 @@ export const AboutModal = () => {
 
             <button
               onClick={() => {
-                showToast('Resume Download', 'Starting resume download...', 'success');
-                window.print();
+                closeModal();
+                setClassicMode(true);
+                showToast('Executive CV Suite', 'Opening printable executive CV...', 'success');
               }}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold font-mono text-xs shadow-lg transition-all active:scale-95 cursor-pointer"
             >
               <Download className="w-4 h-4" />
-              <span>DOWNLOAD RESUME (PDF)</span>
+              <span>VIEW & DOWNLOAD CV (PDF)</span>
             </button>
           </div>
         </div>
