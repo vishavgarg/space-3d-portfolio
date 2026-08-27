@@ -34,7 +34,17 @@ export const useGameStore = create((set, get) => ({
   warpRaceActive: false,
   warpRaceScore: 0,
   warpRaceGatesPassed: 0,
-  warpRaceTimeRemaining: 45,
+  warpRaceTotalGatesPassed: 0,
+  warpRaceGatesTotal: 12,
+  warpRaceLevel: 1,
+  warpRaceLives: 3,
+  warpRaceMaxLives: 3,
+  warpRaceGameOver: false,
+  warpRaceCombo: 0,
+  warpRaceLastGateTime: 0,
+  warpRaceDamageFlash: 0,
+  warpRaceIsWarping: false,
+  warpRaceTransitionData: null,
   warpRaceHighScore: parseInt(localStorage.getItem('vg_warprace_high_score') || '0', 10),
 
   setMiniGame: (game) => set({ activeMiniGame: game, isGameActive: !!game }),
@@ -182,7 +192,38 @@ export const useGameStore = create((set, get) => ({
       activeMiniGame: 'warp-race',
       warpRaceScore: 0,
       warpRaceGatesPassed: 0,
-      warpRaceTimeRemaining: 45
+      warpRaceTotalGatesPassed: 0,
+      warpRaceGatesTotal: 12,
+      warpRaceLevel: 1,
+      warpRaceLives: 3,
+      warpRaceMaxLives: 3,
+      warpRaceGameOver: false,
+      warpRaceCombo: 0,
+      warpRaceLastGateTime: 0,
+      warpRaceDamageFlash: 0,
+      warpRaceIsWarping: false,
+      warpRaceTransitionData: null
+    });
+  },
+
+  restartWarpRace: () => {
+    soundEngine.playWaveStart();
+    set({
+      warpRaceActive: true,
+      activeMiniGame: 'warp-race',
+      warpRaceScore: 0,
+      warpRaceGatesPassed: 0,
+      warpRaceTotalGatesPassed: 0,
+      warpRaceGatesTotal: 12,
+      warpRaceLevel: 1,
+      warpRaceLives: 3,
+      warpRaceMaxLives: 3,
+      warpRaceGameOver: false,
+      warpRaceCombo: 0,
+      warpRaceLastGateTime: 0,
+      warpRaceDamageFlash: 0,
+      warpRaceIsWarping: false,
+      warpRaceTransitionData: null
     });
   },
 
@@ -202,21 +243,152 @@ export const useGameStore = create((set, get) => ({
     set({
       warpRaceActive: false,
       activeMiniGame: null,
+      warpRaceGameOver: false,
+      warpRaceIsWarping: false,
+      warpRaceTransitionData: null,
       warpRaceHighScore: newHigh
     });
   },
 
-  collectWarpGate: (points = 200) => {
-    const { warpRaceScore, warpRaceGatesPassed, warpRaceHighScore } = get();
-    const newScore = warpRaceScore + points;
-    const newGates = warpRaceGatesPassed + 1;
+  collectWarpGate: (basePoints = 200) => {
+    const {
+      warpRaceScore,
+      warpRaceGatesPassed,
+      warpRaceTotalGatesPassed,
+      warpRaceHighScore,
+      warpRaceCombo,
+      warpRaceLastGateTime,
+      warpRaceGameOver,
+      warpRaceIsWarping
+    } = get();
+
+    if (warpRaceGameOver || warpRaceIsWarping) return;
+
+    const now = Date.now();
+    let newCombo = 1;
+    if (now - warpRaceLastGateTime < 3200) {
+      newCombo = Math.min(warpRaceCombo + 1, 5);
+    }
+
+    soundEngine.playWarpPass(newCombo);
+    const earnedPoints = Math.round(basePoints * (1 + (newCombo - 1) * 0.5));
+    const newScore = warpRaceScore + earnedPoints;
+    const newGatesPassed = warpRaceGatesPassed + 1;
+    const newTotalGates = warpRaceTotalGatesPassed + 1;
     const newHigh = Math.max(warpRaceHighScore, newScore);
 
-    soundEngine.playHit();
     set({
       warpRaceScore: newScore,
-      warpRaceGatesPassed: newGates,
+      warpRaceGatesPassed: newGatesPassed,
+      warpRaceTotalGatesPassed: newTotalGates,
+      warpRaceCombo: newCombo,
+      warpRaceLastGateTime: now,
       warpRaceHighScore: newHigh
+    });
+  },
+
+  missWarpGate: () => {
+    const { warpRaceLives, warpRaceGameOver, warpRaceIsWarping } = get();
+    if (warpRaceGameOver || warpRaceIsWarping) return;
+
+    soundEngine.playGateMiss();
+    const remainingLives = warpRaceLives - 1;
+    if (remainingLives <= 0) {
+      soundEngine.playGameOver();
+      set({
+        warpRaceLives: 0,
+        warpRaceGameOver: true,
+        warpRaceDamageFlash: Date.now(),
+        warpRaceCombo: 0
+      });
+    } else {
+      set({
+        warpRaceLives: remainingLives,
+        warpRaceDamageFlash: Date.now(),
+        warpRaceCombo: 0
+      });
+    }
+  },
+
+  hitWarpObstacle: () => {
+    const { warpRaceLives, warpRaceGameOver, warpRaceIsWarping } = get();
+    if (warpRaceGameOver || warpRaceIsWarping) return;
+
+    soundEngine.playExplosion();
+    soundEngine.playPlayerDamage();
+    const remainingLives = warpRaceLives - 1;
+    if (remainingLives <= 0) {
+      soundEngine.playGameOver();
+      set({
+        warpRaceLives: 0,
+        warpRaceGameOver: true,
+        warpRaceDamageFlash: Date.now(),
+        warpRaceCombo: 0
+      });
+    } else {
+      set({
+        warpRaceLives: remainingLives,
+        warpRaceDamageFlash: Date.now(),
+        warpRaceCombo: 0
+      });
+    }
+  },
+
+  advanceWarpRaceLevel: (nextLevel) => {
+    const { warpRaceScore, warpRaceLevel, warpRaceLives, warpRaceMaxLives, warpRaceIsWarping } = get();
+    if (warpRaceIsWarping) return; // Prevent duplicate trigger
+
+    soundEngine.playWaveStart();
+
+    const bonusPoints = 500 * warpRaceLevel;
+    const repairedLives = Math.min(warpRaceMaxLives, warpRaceLives + 1);
+    const restoredLife = repairedLives > warpRaceLives;
+    const nextGatesCount = 10 + nextLevel * 2;
+
+    set({
+      warpRaceIsWarping: true,
+      warpRaceScore: warpRaceScore + bonusPoints,
+      warpRaceLives: repairedLives,
+      warpRaceTransitionData: {
+        prevLevel: warpRaceLevel,
+        nextLevel,
+        bonusPoints,
+        restoredLife
+      }
+    });
+
+    if (window._warpRaceTimer) {
+      clearTimeout(window._warpRaceTimer);
+    }
+    window._warpRaceTimer = setTimeout(() => {
+      set({
+        warpRaceLevel: nextLevel,
+        warpRaceGatesPassed: 0,
+        warpRaceGatesTotal: nextGatesCount,
+        warpRaceIsWarping: false,
+        warpRaceTransitionData: null
+      });
+      window._warpRaceTimer = null;
+    }, 2800);
+  },
+
+  dismissWarpTransition: () => {
+    const { warpRaceTransitionData, warpRaceIsWarping, warpRaceLevel } = get();
+    if (!warpRaceIsWarping) return;
+    if (window._warpRaceTimer) {
+      clearTimeout(window._warpRaceTimer);
+      window._warpRaceTimer = null;
+    }
+
+    const nextLevel = warpRaceTransitionData?.nextLevel || warpRaceLevel + 1;
+    const nextGatesCount = 10 + nextLevel * 2;
+
+    set({
+      warpRaceLevel: nextLevel,
+      warpRaceGatesPassed: 0,
+      warpRaceGatesTotal: nextGatesCount,
+      warpRaceIsWarping: false,
+      warpRaceTransitionData: null
     });
   },
 

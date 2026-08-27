@@ -60,3 +60,9 @@ Thumbs.db
 ~$*.docx
 ~$*.xlsx
 ~$*.pptx
+
+
+/.agents
+/.claude
+agent
+skills-lock.json

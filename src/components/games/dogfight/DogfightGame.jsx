@@ -319,7 +319,6 @@ export const DogfightGame = () => {
   const dogfightIsWarping = useGameStore((s) => s.dogfightIsWarping);
 
   const thrusterColor = usePlayerStore((s) => s.thrusterColor || '#00f0ff');
-  const showToast = useUIStore((s) => s.showToast);
 
   const { camera } = useThree();
 
@@ -906,9 +905,6 @@ export const DogfightGame = () => {
                     ? 250
                     : 150;
                 dogfightKill(pts);
-
-                const drop = droneSkillDrops[Math.floor(Math.random() * droneSkillDrops.length)];
-                showToast(`🎯 ${e.type.toUpperCase()} Defeated! +${pts} PTS`, `Unlocked Tech: ${drop.name}`, 'success');
                 break;
               } else {
                 soundEngine.playHit();
@@ -927,7 +923,6 @@ export const DogfightGame = () => {
             triggerExplosion(e.x, e.y, e.z, e.type);
             const ramDmg = e.type === 'boss' ? 50 : e.type === 'gunship' ? 35 : 25;
             takeDogfightDamage(ramDmg);
-            showToast(`💥 Direct Hull Collision!`, `-${ramDmg}% Shield from ${e.type.toUpperCase()}`, 'error');
             playerHitTime.current = performance.now();
             setPlayerIsHit(true);
             screenShake.current = 0.5;
@@ -938,7 +933,6 @@ export const DogfightGame = () => {
             e.active = false;
             const breachDmg = e.type === 'boss' ? 50 : e.type === 'gunship' ? 30 : e.type === 'phantom' || e.type === 'raider' ? 20 : 15;
             takeDogfightDamage(breachDmg);
-            showToast(`⚠️ Sector Defense Breached!`, `-${breachDmg}% Shield from escaped ${e.type.toUpperCase()}`, 'error');
           } else if (e.active) {
             activeEnemiesCount++;
             activeList.push({

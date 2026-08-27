@@ -31,16 +31,19 @@ import {
   X,
   Gauge,
   Activity,
-  ChevronDown
+  ArrowUpRight,
+  Radio,
+  Sliders,
+  Globe
 } from 'lucide-react';
 
 export const LoadingScreen = () => {
   const [progress, setProgress] = useState(0);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [isRecruiterModalOpen, setIsRecruiterModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('missions'); // 'missions' | 'hangar' | 'portals'
+  const [activeRightView, setActiveRightView] = useState('ship'); // 'ship' | 'gateways'
 
-  // Stores
+  // Global Stores
   const startExperience = useUIStore((s) => s.startExperience);
   const setClassicMode = useUIStore((s) => s.setClassicMode);
   const setActiveModal = useUIStore((s) => s.setActiveModal);
@@ -68,16 +71,16 @@ export const LoadingScreen = () => {
           clearInterval(timer);
           return 100;
         }
-        return prev + Math.floor(Math.random() * 22) + 12;
+        return prev + Math.floor(Math.random() * 20) + 10;
       });
-    }, 100);
+    }, 80);
 
     return () => clearInterval(timer);
   }, []);
 
   const isReady = progress >= 100;
 
-  // Sound + Action Handlers
+  // Sound Engine Handlers
   const handleStartTour = () => {
     soundEngine.playWaveStart();
     startExperience();
@@ -127,331 +130,222 @@ export const LoadingScreen = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col justify-between bg-[#040711]/90 text-white overflow-y-auto overflow-x-hidden backdrop-blur-md transition-all select-none">
-      {/* Dynamic Cyber Ambient Background Grid & Radial Glow */}
+    <div className="fixed inset-0 z-50 flex flex-col justify-between bg-[#050811]/94 text-slate-100 overflow-y-auto overflow-x-hidden backdrop-blur-2xl transition-all select-none min-h-[100dvh]">
+      {/* Subtle Starlight Depth & Radial Atmosphere */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#00f0ff08_1px,transparent_1px),linear-gradient(to_bottom,#00f0ff08_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_75%_65%_at_50%_50%,#000_70%,transparent_100%)]" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-cyan-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-[500px] h-[300px] bg-purple-600/10 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(245,208,97,0.04),transparent_50%),radial-gradient(circle_at_80%_80%,rgba(0,240,255,0.04),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:6rem_6rem] [mask-image:radial-gradient(ellipse_80%_70%_at_50%_40%,#000_60%,transparent_100%)]" />
       </div>
 
-      {/* 1. TOP COMMAND STATUS BAR */}
-      <header className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 pt-4 sm:pt-6 flex flex-wrap items-center justify-between gap-3 shrink-0">
-        {/* Pilot ID & Availability Status */}
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 p-0.5 shadow-[0_0_20px_rgba(0,240,255,0.4)]">
-              <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center font-mono font-bold text-sm text-cyan-400">
+      {/* 1. MINIMALIST PLATINUM FLOATING NAV */}
+      <header className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-8 pt-5 sm:pt-7 shrink-0">
+        <div className="w-full rounded-2xl p-1 bg-white/[0.04] border border-white/[0.08] backdrop-blur-3xl shadow-[0_8px_30px_rgba(0,0,0,0.6)]">
+          <div className="w-full rounded-xl px-4 sm:px-6 py-3 bg-[#080d18]/90 flex flex-wrap items-center justify-between gap-3">
+            {/* Identity & Status */}
+            <div className="flex items-center gap-3.5">
+              <div className="w-9 h-9 rounded-xl bg-white/[0.06] border border-white/[0.12] flex items-center justify-center font-mono font-bold text-xs text-white tracking-wider">
                 VG
               </div>
-            </div>
-            <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-950 flex items-center justify-center shadow-[0_0_8px_#10b981]">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-            </span>
-          </div>
-
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="text-xs sm:text-sm font-bold tracking-wider font-sans text-white">
-                VISHAV GARG
-              </span>
-              <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[10px] font-mono text-emerald-300 font-semibold">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                OPEN FOR SENIOR / STAFF ROLES
-              </span>
-            </div>
-            <span className="text-[10px] sm:text-xs font-mono text-cyan-400/90 tracking-tight">
-              SENIOR FRONTEND ARCHITECT • 3D WEBGL
-            </span>
-          </div>
-        </div>
-
-        {/* Action Controls & Sound Toggle */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* Quick Recruiter Summary Modal Trigger */}
-          <button
-            onClick={() => {
-              soundEngine.playClick();
-              setIsRecruiterModalOpen(true);
-            }}
-            className="hidden xs:flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-purple-500/40 text-purple-300 hover:text-purple-200 text-[11px] sm:text-xs font-mono transition-all active:scale-95 shadow-sm cursor-pointer"
-          >
-            <Briefcase className="w-3.5 h-3.5 text-purple-400" />
-            <span>RECRUITER 30s READ</span>
-          </button>
-
-          {/* ATS Classic CV Switch */}
-          <button
-            onClick={() => {
-              soundEngine.playClick();
-              setClassicMode(true);
-              startExperience();
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 hover:border-pink-500/50 text-slate-300 hover:text-pink-300 text-[11px] sm:text-xs font-mono transition-all active:scale-95 cursor-pointer"
-            title="Switch to Traditional ATS Resume"
-          >
-            <FileText className="w-3.5 h-3.5 text-pink-400" />
-            <span className="hidden sm:inline">CLASSIC CV</span>
-            <span className="sm:hidden">CV</span>
-          </button>
-
-          {/* Procedural Audio Engine Toggle */}
-          <button
-            onClick={() => {
-              toggleAudio();
-              if (isAudioMuted) {
-                soundEngine.playClick();
-              }
-            }}
-            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border transition-all active:scale-95 cursor-pointer text-[11px] font-mono ${
-              !isAudioMuted
-                ? 'bg-cyan-950/80 border-cyan-500/50 text-cyan-300 shadow-[0_0_15px_rgba(0,240,255,0.2)]'
-                : 'bg-slate-900/80 border-slate-800 text-slate-400 hover:text-slate-200'
-            }`}
-            title={isAudioMuted ? 'Turn Sound ON' : 'Mute Sound'}
-          >
-            {!isAudioMuted ? (
-              <>
-                <Volume2 className="w-3.5 h-3.5 text-cyan-400" />
-                <div className="flex items-end gap-0.5 h-3">
-                  <span className="w-0.5 h-2 bg-cyan-400 animate-pulse" />
-                  <span className="w-0.5 h-3 bg-cyan-400 animate-pulse delay-75" />
-                  <span className="w-0.5 h-1.5 bg-cyan-400 animate-pulse delay-150" />
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs sm:text-sm font-semibold tracking-wider text-white font-sans">
+                    VISHAV GARG
+                  </span>
+                  <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[10px] font-mono text-emerald-300 font-medium">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    OPEN FOR SENIOR ROLES
+                  </span>
                 </div>
-              </>
-            ) : (
-              <>
-                <VolumeX className="w-3.5 h-3.5 text-rose-400" />
-                <span className="hidden md:inline text-slate-400">MUTED</span>
-              </>
-            )}
-          </button>
+                <span className="text-[10px] font-mono text-slate-400 tracking-tight">
+                  SENIOR FRONTEND ARCHITECT • 3D WEBGL
+                </span>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <button
+                onClick={() => {
+                  soundEngine.playClick();
+                  setIsRecruiterModalOpen(true);
+                }}
+                className="hidden xs:flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] text-slate-300 hover:text-white text-xs font-mono transition-all active:scale-[0.98] cursor-pointer"
+              >
+                <Briefcase className="w-3.5 h-3.5 text-[#e6c387]" />
+                <span>30S BRIEF</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  soundEngine.playClick();
+                  setClassicMode(true);
+                  startExperience();
+                }}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] text-slate-300 hover:text-white text-xs font-mono transition-all active:scale-[0.98] cursor-pointer"
+                title="Switch to Traditional Document Resume"
+              >
+                <FileText className="w-3.5 h-3.5 text-slate-300" />
+                <span>CLASSIC CV</span>
+              </button>
+
+              {/* Procedural Audio Engine Toggle */}
+              <button
+                onClick={() => {
+                  toggleAudio();
+                  if (isAudioMuted) soundEngine.playClick();
+                }}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all active:scale-[0.98] cursor-pointer text-xs font-mono ${
+                  !isAudioMuted
+                    ? 'bg-amber-400/[0.08] border-amber-300/30 text-amber-200 shadow-[0_0_15px_rgba(245,208,97,0.1)]'
+                    : 'bg-white/[0.03] border-white/[0.06] text-slate-400 hover:text-slate-200'
+                }`}
+                title={isAudioMuted ? 'Turn Audio ON' : 'Mute Audio'}
+              >
+                {!isAudioMuted ? (
+                  <>
+                    <Volume2 className="w-3.5 h-3.5 text-[#f5d061]" />
+                    <div className="flex items-end gap-0.5 h-3">
+                      <span className="w-0.5 h-2 bg-[#f5d061] animate-pulse" />
+                      <span className="w-0.5 h-3 bg-[#f5d061] animate-pulse delay-75" />
+                      <span className="w-0.5 h-1.5 bg-[#f5d061] animate-pulse delay-150" />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <VolumeX className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="hidden sm:inline text-[11px]">MUTED</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </header>
 
-      {/* 2. MAIN HERO & INTERACTIVE LAUNCH DECK */}
-      <main className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col items-center justify-center my-auto">
-        {/* Hero Title & Value Proposition */}
-        <div className="text-center max-w-3xl mb-6 sm:mb-8">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-cyan-500/30 text-cyan-300 text-xs font-mono tracking-wider mb-3 sm:mb-4 shadow-[0_0_20px_rgba(0,240,255,0.15)]">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-spin" style={{ animationDuration: '6s' }} />
-            <span>INTERACTIVE 3D WEBGL PORTFOLIO & ARCADE</span>
+      {/* 2. ASYMMETRIC DUAL-STAGE EDITORIAL VIEWPORT */}
+      <main className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-12 my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        {/* LEFT COLUMN: EDITORIAL HERO & LAUNCH MATRIX (7 COLS) */}
+        <div className="lg:col-span-7 flex flex-col justify-center">
+          {/* Eyebrow */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] text-slate-300 text-xs font-mono tracking-widest uppercase mb-4 w-max">
+            <Sparkles className="w-3 h-3 text-[#f5d061]" />
+            <span>Interactive 3D WebGL Portfolio</span>
           </div>
 
-          <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-black font-sans tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-sky-400 drop-shadow-[0_0_35px_rgba(0,240,255,0.3)] mb-2 sm:mb-3">
-            VISHAV GARG
+          {/* Majestic Wide Headline */}
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-sans tracking-tight text-white leading-[1.1] mb-4">
+            Architecting enterprise platforms & immersive spatial web.
           </h1>
 
-          <p className="text-xs sm:text-base text-slate-300 max-w-2xl mx-auto font-sans leading-relaxed">
-            Engineering scalable enterprise frontend architectures, reusable design systems, and
-            cutting-edge 3D graphics for Fortune 500 organizations including{' '}
-            <strong className="text-cyan-300 font-semibold">Toyota Motor North America</strong> and{' '}
-            <strong className="text-pink-300 font-semibold">Procter & Gamble (Pampers)</strong>.
+          {/* Subtext */}
+          <p className="text-sm sm:text-base text-slate-300 font-sans leading-relaxed max-w-xl mb-6">
+            Senior Frontend Engineer with 6+ years designing high-performance architectures, design systems, and WebGL visualizations for{' '}
+            <strong className="text-white font-semibold">Toyota Motor North America</strong> and{' '}
+            <strong className="text-white font-semibold">Procter & Gamble (Pampers)</strong>.
           </p>
 
-          {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-4 sm:mt-6 max-w-2xl mx-auto">
-            <div className="p-2.5 rounded-xl bg-slate-900/70 border border-slate-800/80 flex flex-col items-center">
-              <span className="text-base sm:text-lg font-black font-mono text-cyan-400">6+ Years</span>
-              <span className="text-[10px] sm:text-[11px] text-slate-400 font-sans">Full Stack & Frontend</span>
+          {/* Proven Credentials Strip */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-8 max-w-xl">
+            <div className="rounded-xl p-3 bg-white/[0.03] border border-white/[0.06] flex flex-col">
+              <span className="text-sm font-bold font-mono text-white">6+ Years</span>
+              <span className="text-[10px] text-slate-400 font-sans">Full Stack & Frontend</span>
             </div>
-            <div className="p-2.5 rounded-xl bg-slate-900/70 border border-slate-800/80 flex flex-col items-center">
-              <span className="text-base sm:text-lg font-black font-mono text-pink-400">Fortune 500</span>
-              <span className="text-[10px] sm:text-[11px] text-slate-400 font-sans">Toyota & P&G (Pampers)</span>
+            <div className="rounded-xl p-3 bg-white/[0.03] border border-white/[0.06] flex flex-col">
+              <span className="text-sm font-bold font-mono text-[#f5d061]">Fortune 500</span>
+              <span className="text-[10px] text-slate-400 font-sans">Toyota & P&G</span>
             </div>
-            <div className="p-2.5 rounded-xl bg-slate-900/70 border border-slate-800/80 flex flex-col items-center">
-              <span className="text-base sm:text-lg font-black font-mono text-amber-400">20+ Apps</span>
-              <span className="text-[10px] sm:text-[11px] text-slate-400 font-sans">Production Scale</span>
+            <div className="rounded-xl p-3 bg-white/[0.03] border border-white/[0.06] flex flex-col">
+              <span className="text-sm font-bold font-mono text-cyan-400">20+ Apps</span>
+              <span className="text-[10px] text-slate-400 font-sans">Production Scale</span>
             </div>
-            <div className="p-2.5 rounded-xl bg-slate-900/70 border border-slate-800/80 flex flex-col items-center">
-              <span className="text-base sm:text-lg font-black font-mono text-emerald-400">100%</span>
-              <span className="text-[10px] sm:text-[11px] text-slate-400 font-sans">Performance Vitals</span>
+            <div className="rounded-xl p-3 bg-white/[0.03] border border-white/[0.06] flex flex-col">
+              <span className="text-sm font-bold font-mono text-emerald-400">100%</span>
+              <span className="text-[10px] text-slate-400 font-sans">Performance Vitals</span>
             </div>
+          </div>
+
+          {/* Primary Action Button Cluster */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            {/* Primary Solid White Pill CTA */}
+            <button
+              onClick={handleStartTour}
+              disabled={!isReady}
+              className="group py-3.5 pl-6 pr-3 rounded-full bg-white hover:bg-slate-100 text-slate-950 font-mono font-bold text-xs tracking-wider flex items-center justify-between shadow-[0_0_30px_rgba(255,255,255,0.2)] active:scale-[0.98] cursor-pointer disabled:opacity-50 transition-all"
+            >
+              <span>START GUIDED TOUR (5 STOPS)</span>
+              <div className="w-8 h-8 rounded-full bg-slate-950 text-white flex items-center justify-center group-hover:translate-x-0.5 transition-transform ml-4">
+                <Play className="w-3.5 h-3.5 fill-white" />
+              </div>
+            </button>
+
+            {/* Secondary Frosted Glass CTA */}
+            <button
+              onClick={handleFreeRoam}
+              disabled={!isReady}
+              className="group py-3.5 px-6 rounded-full bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 hover:text-white border border-white/[0.12] font-mono font-bold text-xs tracking-wider flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer disabled:opacity-50 transition-all"
+            >
+              <Compass className="w-4 h-4 text-cyan-400" />
+              <span>FREE ROAM 3D</span>
+            </button>
           </div>
         </div>
 
-        {/* Navigation Selector Tabs: Missions | Starfleet Hangar | Direct Portals */}
-        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950/90 border border-slate-800/90 mb-5 sm:mb-6 max-w-md w-full backdrop-blur-xl">
-          <button
-            onClick={() => {
-              soundEngine.playClick();
-              setActiveTab('missions');
-            }}
-            className={`flex-1 py-2 px-3 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-              activeTab === 'missions'
-                ? 'bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(0,240,255,0.4)]'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Compass className="w-3.5 h-3.5" />
-            <span>MISSIONS</span>
-          </button>
+        {/* RIGHT COLUMN: INTERACTIVE TELEMETRY & LIVE FLIGHT DECK (5 COLS) */}
+        <div className="lg:col-span-5 flex flex-col gap-4">
+          {/* Stage View Switcher */}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06] w-full">
+            <button
+              onClick={() => {
+                soundEngine.playClick();
+                setActiveRightView('ship');
+              }}
+              className={`flex-1 py-1.5 px-3 rounded-lg font-mono text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                activeRightView === 'ship'
+                  ? 'bg-white text-slate-950 shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Rocket className="w-3.5 h-3.5" />
+              <span>STARFLEET CHASSIS</span>
+            </button>
 
-          <button
-            onClick={() => {
-              soundEngine.playClick();
-              setActiveTab('hangar');
-            }}
-            className={`flex-1 py-2 px-3 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-              activeTab === 'hangar'
-                ? 'bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(0,240,255,0.4)]'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Rocket className="w-3.5 h-3.5" />
-            <span>STARFLEET ({activeShipData.name.split(' ')[1]})</span>
-          </button>
+            <button
+              onClick={() => {
+                soundEngine.playClick();
+                setActiveRightView('gateways');
+              }}
+              className={`flex-1 py-1.5 px-3 rounded-lg font-mono text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                activeRightView === 'gateways'
+                  ? 'bg-white text-slate-950 shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5" />
+              <span>WARP GATEWAYS</span>
+            </button>
+          </div>
 
-          <button
-            onClick={() => {
-              soundEngine.playClick();
-              setActiveTab('portals');
-            }}
-            className={`flex-1 py-2 px-3 rounded-xl font-mono text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-              activeTab === 'portals'
-                ? 'bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(0,240,255,0.4)]'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <Zap className="w-3.5 h-3.5" />
-            <span>WARP PORTALS</span>
-          </button>
-        </div>
-
-        {/* 3. TAB PANELS */}
-        <div className="w-full max-w-4xl">
-          {/* A. MISSIONS TAB */}
-          {activeTab === 'missions' && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4 animate-in fade-in duration-200">
-              {/* Mission 1: Guided Autopilot Tour (FEATURED) */}
-              <div className="relative group md:col-span-1 rounded-2xl bg-gradient-to-b from-cyan-950/40 via-slate-900/80 to-slate-950/90 border-2 border-cyan-500/60 p-5 flex flex-col justify-between shadow-[0_0_30px_rgba(0,240,255,0.15)] hover:shadow-[0_0_40px_rgba(0,240,255,0.3)] transition-all">
-                <div className="absolute -top-3 left-4 px-2.5 py-0.5 rounded-full bg-cyan-500 text-slate-950 font-mono text-[10px] font-bold tracking-wider uppercase shadow-md flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" />
-                  RECOMMENDED
-                </div>
-
-                <div>
-                  <div className="w-12 h-12 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center mb-3.5 text-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.3)]">
-                    <Play className="w-6 h-6 fill-cyan-400" />
-                  </div>
-                  <h2 className="text-base sm:text-lg font-bold font-sans text-white mb-1.5">
-                    Cinematic Autopilot Tour
-                  </h2>
-                  <p className="text-xs text-slate-300 font-sans leading-relaxed mb-4">
-                    Sit back and enjoy an automated 5-stop aerial flyover with interactive commentary through Toyota & Pampers case studies, skills arena, and bio.
-                  </p>
-                </div>
-
-                <button
-                  onClick={handleStartTour}
-                  disabled={!isReady}
-                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-mono font-bold text-xs tracking-wider flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,240,255,0.4)] active:scale-95 cursor-pointer disabled:opacity-50 transition-all"
-                >
-                  <Play className="w-4 h-4 fill-slate-950" />
-                  <span>START GUIDED TOUR</span>
-                </button>
-              </div>
-
-              {/* Mission 2: Free Roam 3D Flight */}
-              <div className="rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 p-5 flex flex-col justify-between shadow-lg transition-all">
-                <div>
-                  <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center mb-3.5 text-cyan-400">
-                    <Compass className="w-6 h-6" />
-                  </div>
-                  <h2 className="text-base sm:text-lg font-bold font-sans text-white mb-1.5">
-                    Free-Flight 3D World
-                  </h2>
-                  <p className="text-xs text-slate-300 font-sans leading-relaxed mb-4">
-                    Take full manual 6-DOF controls! Fly freely across floating archipelagos, crystal spires, cyber bridges, and shoot skill gems with laser cannons.
-                  </p>
-                </div>
-
-                <button
-                  onClick={handleFreeRoam}
-                  disabled={!isReady}
-                  className="w-full py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 font-mono font-bold text-xs tracking-wider flex items-center justify-center gap-2 active:scale-95 cursor-pointer disabled:opacity-50 transition-all"
-                >
-                  <Compass className="w-4 h-4 text-cyan-400" />
-                  <span>ENTER FREE ROAM</span>
-                </button>
-              </div>
-
-              {/* Mission 3: Space Arcade Battles */}
-              <div className="rounded-2xl bg-gradient-to-b from-purple-950/30 via-slate-900/80 to-slate-950/90 border border-purple-500/40 hover:border-purple-500/70 p-5 flex flex-col justify-between shadow-lg transition-all">
-                <div>
-                  <div className="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center mb-3.5 text-purple-400">
-                    <Flame className="w-6 h-6" />
-                  </div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <h2 className="text-base sm:text-lg font-bold font-sans text-white">
-                      Space Mini-Games
-                    </h2>
-                    <span className="text-[10px] font-mono text-purple-300 bg-purple-950/80 px-2 py-0.5 rounded border border-purple-500/40">
-                      ARCADE
+          {/* VIEW A: STARFLEET FLIGHT CHASSIS & SPECTRAL TUNER */}
+          {activeRightView === 'ship' && (
+            <div className="rounded-2xl p-1 bg-white/[0.04] border border-white/[0.08] shadow-2xl">
+              <div className="rounded-xl p-5 bg-[#080d18]/90">
+                {/* Header */}
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.06]">
+                  <div className="flex items-center gap-2">
+                    <Sliders className="w-4 h-4 text-[#f5d061]" />
+                    <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                      Flight Configurator
                     </span>
                   </div>
-                  <p className="text-xs text-slate-300 font-sans leading-relaxed mb-4">
-                    Fast-paced space action! Test your reflexes in the Dogfight rail shooter or clock record times in the Warp Gate Race.
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <button
-                    onClick={handleStartDogfight}
-                    disabled={!isReady}
-                    className="w-full py-2.5 px-3 rounded-xl bg-purple-950/80 hover:bg-purple-900/90 text-purple-200 border border-purple-500/50 font-mono font-bold text-xs flex items-center justify-between active:scale-95 cursor-pointer disabled:opacity-50 transition-all"
-                  >
-                    <span className="flex items-center gap-1.5">
-                      <Crosshair className="w-3.5 h-3.5 text-purple-400" />
-                      SPACE DOGFIGHT
-                    </span>
-                    <span className="text-[10px] text-purple-400 font-mono">
-                      HI: {dogfightHighScore} PTS
-                    </span>
-                  </button>
-
-                  <button
-                    onClick={handleStartWarpRace}
-                    disabled={!isReady}
-                    className="w-full py-2.5 px-3 rounded-xl bg-amber-950/80 hover:bg-amber-900/90 text-amber-200 border border-amber-500/50 font-mono font-bold text-xs flex items-center justify-between active:scale-95 cursor-pointer disabled:opacity-50 transition-all"
-                  >
-                    <span className="flex items-center gap-1.5">
-                      <Zap className="w-3.5 h-3.5 text-amber-400" />
-                      WARP GATE RACE
-                    </span>
-                    <span className="text-[10px] text-amber-400 font-mono">
-                      HI: {warpRaceHighScore} PTS
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* B. STARFLEET HANGAR TAB */}
-          {activeTab === 'hangar' && (
-            <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 sm:p-6 shadow-xl animate-in fade-in duration-200">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-800">
-                <div>
-                  <h2 className="text-lg font-bold font-sans text-white flex items-center gap-2">
-                    <Rocket className="w-5 h-5 text-cyan-400" />
-                    Starfleet Pre-Flight Configurator
-                  </h2>
-                  <p className="text-xs text-slate-400 font-sans">
-                    Choose your flight chassis and tune thruster plasma emissions before launching.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-slate-400">Plasma Spectra:</span>
                   <div className="flex items-center gap-1.5">
                     {thrusterColorPresets.map((preset) => (
                       <button
                         key={preset.id}
                         onClick={() => handleSelectThruster(preset.hex)}
-                        className={`w-6 h-6 rounded-full transition-all cursor-pointer ${
+                        className={`w-5 h-5 rounded-full transition-all cursor-pointer ${
                           thrusterColor === preset.hex
-                            ? 'scale-125 ring-2 ring-white shadow-[0_0_10px_currentColor]'
-                            : 'opacity-70 hover:opacity-100'
+                            ? 'scale-125 ring-2 ring-white shadow-[0_0_8px_currentColor]'
+                            : 'opacity-60 hover:opacity-100'
                         }`}
                         style={{ backgroundColor: preset.hex, color: preset.hex }}
                         title={preset.name}
@@ -459,191 +353,186 @@ export const LoadingScreen = () => {
                     ))}
                   </div>
                 </div>
-              </div>
 
-              {/* Ship Class Selection Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-5">
-                {shipClasses.map((ship) => {
-                  const isSelected = selectedShip === ship.id;
-                  return (
-                    <div
-                      key={ship.id}
-                      onClick={() => handleSelectShip(ship.id)}
-                      className={`p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
-                        isSelected
-                          ? 'bg-cyan-950/40 border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.2)]'
-                          : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
-                      }`}
-                    >
-                      <div>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="font-bold text-sm font-sans text-white">{ship.name}</span>
+                {/* Ship Chassis Selection Cards */}
+                <div className="space-y-2.5 mb-4">
+                  {shipClasses.map((ship) => {
+                    const isSelected = selectedShip === ship.id;
+                    return (
+                      <div
+                        key={ship.id}
+                        onClick={() => handleSelectShip(ship.id)}
+                        className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-white/[0.06] border-white/20 shadow-md'
+                            : 'bg-black/30 border-white/[0.04] hover:border-white/[0.1]'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-bold text-white font-sans">{ship.name}</span>
+                            <span className="text-[10px] font-mono text-slate-400">{ship.tagline}</span>
+                          </div>
                           {isSelected && (
-                            <span className="px-2 py-0.5 rounded-full bg-cyan-400 text-slate-950 text-[10px] font-mono font-bold">
-                              ACTIVE
+                            <span className="px-2 py-0.5 rounded-full bg-white text-slate-950 text-[9px] font-mono font-bold">
+                              SELECTED
                             </span>
                           )}
                         </div>
-                        <span className="text-[11px] font-mono text-cyan-400 block mb-2">{ship.tagline}</span>
-                        <p className="text-[11px] text-slate-400 font-sans leading-relaxed mb-3">
-                          {ship.description}
-                        </p>
-                      </div>
 
-                      {/* Stat Bars */}
-                      <div className="space-y-1.5 pt-2 border-t border-slate-800/80 text-[10px] font-mono">
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400">Speed</span>
-                          <div className="w-20 bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                            <div className="bg-cyan-400 h-full" style={{ width: `${ship.stats.speed}%` }} />
+                        {/* Telemetry Bars */}
+                        <div className="grid grid-cols-3 gap-2 mt-2 pt-2 border-t border-white/[0.04] text-[9px] font-mono text-slate-400">
+                          <div>
+                            <span>Speed {ship.stats.speed}%</span>
+                            <div className="w-full bg-slate-800 h-1 rounded-full mt-0.5 overflow-hidden">
+                              <div className="bg-white h-full" style={{ width: `${ship.stats.speed}%` }} />
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400">Handling</span>
-                          <div className="w-20 bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                            <div className="bg-purple-400 h-full" style={{ width: `${ship.stats.handling}%` }} />
+                          <div>
+                            <span>Agility {ship.stats.handling}%</span>
+                            <div className="w-full bg-slate-800 h-1 rounded-full mt-0.5 overflow-hidden">
+                              <div className="bg-[#f5d061] h-full" style={{ width: `${ship.stats.handling}%` }} />
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400">Shields</span>
-                          <div className="w-20 bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                            <div className="bg-emerald-400 h-full" style={{ width: `${ship.stats.shielding}%` }} />
+                          <div>
+                            <span>Armor {ship.stats.shielding}%</span>
+                            <div className="w-full bg-slate-800 h-1 rounded-full mt-0.5 overflow-hidden">
+                              <div className="bg-cyan-400 h-full" style={{ width: `${ship.stats.shielding}%` }} />
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
 
-              {/* Ready to Fly Button */}
-              <div className="flex justify-end gap-2">
+                {/* Quick Launch */}
                 <button
                   onClick={handleFreeRoam}
                   disabled={!isReady}
-                  className="py-2.5 px-5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-mono font-bold text-xs tracking-wider flex items-center gap-2 shadow-md active:scale-95 cursor-pointer disabled:opacity-50 transition-all"
+                  className="w-full py-2.5 px-4 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-white border border-white/[0.12] font-mono font-bold text-xs tracking-wider flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer disabled:opacity-50 transition-all"
                 >
-                  <Rocket className="w-4 h-4" />
+                  <Rocket className="w-3.5 h-3.5 text-[#f5d061]" />
                   <span>LAUNCH WITH {activeShipData.name.toUpperCase()}</span>
                 </button>
               </div>
             </div>
           )}
 
-          {/* C. WARP PORTALS TAB */}
-          {activeTab === 'portals' && (
-            <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 sm:p-6 shadow-xl animate-in fade-in duration-200">
-              <div className="pb-3 mb-4 border-b border-slate-800">
-                <h2 className="text-lg font-bold font-sans text-white flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-amber-400" />
-                  Direct Warp Gateways
-                </h2>
-                <p className="text-xs text-slate-400 font-sans">
-                  Instant fast-travel directly to specific archipelago case studies or credentials.
-                </p>
-              </div>
+          {/* VIEW B: DIRECT WARP GATEWAYS */}
+          {activeRightView === 'gateways' && (
+            <div className="rounded-2xl p-1 bg-white/[0.04] border border-white/[0.08] shadow-2xl">
+              <div className="rounded-xl p-5 bg-[#080d18]/90">
+                <div className="pb-3 mb-3 border-b border-white/[0.06]">
+                  <span className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-cyan-400" />
+                    Direct Teleport Gateways
+                  </span>
+                </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <button
-                  onClick={() => handleDirectWarp('projects')}
-                  className="p-4 rounded-xl bg-slate-950/80 border border-blue-500/40 hover:border-blue-400 text-left flex flex-col justify-between group transition-all active:scale-95 cursor-pointer"
-                >
-                  <div>
-                    <div className="flex items-center gap-2 text-blue-400 font-bold font-mono text-xs mb-1">
-                      <Briefcase className="w-4 h-4" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-3">
+                  <button
+                    onClick={() => handleDirectWarp('projects')}
+                    className="p-3 rounded-xl bg-black/30 border border-white/[0.06] hover:border-cyan-400/40 text-left transition-all active:scale-[0.98] cursor-pointer group"
+                  >
+                    <div className="flex items-center justify-between text-cyan-400 text-xs font-mono font-bold mb-1">
                       <span>PROJECTS HUB</span>
+                      <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                     </div>
-                    <p className="text-xs text-slate-300 font-sans mb-3">
-                      Toyota TMNA, P&G Pampers, PC Builder 3D, and Diveroid case studies.
+                    <p className="text-[11px] text-slate-400 leading-tight">
+                      Toyota TMNA, P&G Pampers, PC Builder 3D
                     </p>
-                  </div>
-                  <span className="text-[10px] font-mono text-blue-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                    WARP NOW <ChevronRight className="w-3 h-3" />
-                  </span>
-                </button>
+                  </button>
 
-                <button
-                  onClick={() => handleDirectWarp('skills')}
-                  className="p-4 rounded-xl bg-slate-950/80 border border-emerald-500/40 hover:border-emerald-400 text-left flex flex-col justify-between group transition-all active:scale-95 cursor-pointer"
-                >
-                  <div>
-                    <div className="flex items-center gap-2 text-emerald-400 font-bold font-mono text-xs mb-1">
-                      <Crosshair className="w-4 h-4" />
+                  <button
+                    onClick={() => handleDirectWarp('skills')}
+                    className="p-3 rounded-xl bg-black/30 border border-white/[0.06] hover:border-emerald-400/40 text-left transition-all active:scale-[0.98] cursor-pointer group"
+                  >
+                    <div className="flex items-center justify-between text-emerald-400 text-xs font-mono font-bold mb-1">
                       <span>SKILLS ARENA</span>
+                      <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                     </div>
-                    <p className="text-xs text-slate-300 font-sans mb-3">
-                      Interactive target range for React 19, Three.js, TypeScript, and cloud stacks.
+                    <p className="text-[11px] text-slate-400 leading-tight">
+                      React 19, Three.js, TypeScript, Cloud
                     </p>
-                  </div>
-                  <span className="text-[10px] font-mono text-emerald-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                    WARP NOW <ChevronRight className="w-3 h-3" />
-                  </span>
-                </button>
+                  </button>
 
-                <button
-                  onClick={() => handleDirectWarp('experience')}
-                  className="p-4 rounded-xl bg-slate-950/80 border border-purple-500/40 hover:border-purple-400 text-left flex flex-col justify-between group transition-all active:scale-95 cursor-pointer"
-                >
-                  <div>
-                    <div className="flex items-center gap-2 text-purple-400 font-bold font-mono text-xs mb-1">
-                      <Sparkles className="w-4 h-4" />
+                  <button
+                    onClick={() => handleDirectWarp('experience')}
+                    className="p-3 rounded-xl bg-black/30 border border-white/[0.06] hover:border-[#f5d061]/40 text-left transition-all active:scale-[0.98] cursor-pointer group"
+                  >
+                    <div className="flex items-center justify-between text-[#f5d061] text-xs font-mono font-bold mb-1">
                       <span>CAREER ROAD</span>
+                      <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                     </div>
-                    <p className="text-xs text-slate-300 font-sans mb-3">
-                      6+ years timeline across Omnicom Media Group, Code Garage, and Daryl Tech.
+                    <p className="text-[11px] text-slate-400 leading-tight">
+                      6+ Years timeline across top agencies
                     </p>
-                  </div>
-                  <span className="text-[10px] font-mono text-purple-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                    WARP NOW <ChevronRight className="w-3 h-3" />
-                  </span>
-                </button>
+                  </button>
 
-                <button
-                  onClick={() => handleDirectWarp('contact')}
-                  className="p-4 rounded-xl bg-slate-950/80 border border-rose-500/40 hover:border-rose-400 text-left flex flex-col justify-between group transition-all active:scale-95 cursor-pointer"
-                >
-                  <div>
-                    <div className="flex items-center gap-2 text-rose-400 font-bold font-mono text-xs mb-1">
-                      <Mail className="w-4 h-4" />
+                  <button
+                    onClick={() => handleDirectWarp('contact')}
+                    className="p-3 rounded-xl bg-black/30 border border-white/[0.06] hover:border-rose-400/40 text-left transition-all active:scale-[0.98] cursor-pointer group"
+                  >
+                    <div className="flex items-center justify-between text-rose-400 text-xs font-mono font-bold mb-1">
                       <span>CONTACT SPIRE</span>
+                      <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                     </div>
-                    <p className="text-xs text-slate-300 font-sans mb-3">
-                      Direct messaging portal, email, social channels, and scheduling.
+                    <p className="text-[11px] text-slate-400 leading-tight">
+                      Direct messaging and hire inquiry
                     </p>
-                  </div>
-                  <span className="text-[10px] font-mono text-rose-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                    WARP NOW <ChevronRight className="w-3 h-3" />
-                  </span>
-                </button>
+                  </button>
+                </div>
+
+                {/* Mini Arcade Launcher */}
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/[0.04]">
+                  <button
+                    onClick={handleStartDogfight}
+                    disabled={!isReady}
+                    className="py-2 px-2.5 rounded-lg bg-purple-950/40 hover:bg-purple-900/60 border border-purple-500/30 text-purple-200 text-[11px] font-mono flex items-center justify-between active:scale-[0.98] cursor-pointer"
+                  >
+                    <span>DOGFIGHT ARCADE</span>
+                    <span className="text-[9px] text-purple-400">{dogfightHighScore} PTS</span>
+                  </button>
+
+                  <button
+                    onClick={handleStartWarpRace}
+                    disabled={!isReady}
+                    className="py-2 px-2.5 rounded-lg bg-amber-950/40 hover:bg-amber-900/60 border border-amber-500/30 text-amber-200 text-[11px] font-mono flex items-center justify-between active:scale-[0.98] cursor-pointer"
+                  >
+                    <span>WARP GATE RACE</span>
+                    <span className="text-[9px] text-amber-400">{warpRaceHighScore} PTS</span>
+                  </button>
+                </div>
               </div>
             </div>
           )}
-        </div>
 
-        {/* Loading / Ready Progress Bar */}
-        <div className="w-full max-w-md mt-6">
-          <div className="w-full bg-slate-900/90 rounded-full h-2 border border-slate-800 p-0.5 shadow-inner">
-            <div
-              className="bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 h-full rounded-full transition-all duration-200 ease-out shadow-[0_0_12px_rgba(0,240,255,0.6)]"
-              style={{ width: `${Math.min(progress, 100)}%` }}
-            />
-          </div>
-          <div className="flex justify-between w-full text-[10px] font-mono text-slate-400 mt-1.5">
-            <span>{isReady ? '3D ENGINE READY // ALL SYSTEMS NOMINAL' : 'INITIALIZING PROCEDURAL SPACE ENGINE...'}</span>
-            <span className="text-cyan-400 font-bold">{Math.min(progress, 100)}%</span>
+          {/* Engine Initialization Bar */}
+          <div className="w-full">
+            <div className="w-full bg-slate-900/90 rounded-full h-1.5 border border-white/[0.06] p-0.5 overflow-hidden">
+              <div
+                className="bg-gradient-to-r from-white via-[#f5d061] to-cyan-400 h-full rounded-full transition-all duration-200 ease-out"
+                style={{ width: `${Math.min(progress, 100)}%` }}
+              />
+            </div>
+            <div className="flex justify-between w-full text-[10px] font-mono text-slate-400 mt-1">
+              <span>{isReady ? '3D WebGL Engine Online // All Systems Nominal' : 'Loading Procedural Space Assets...'}</span>
+              <span className="text-white font-bold">{Math.min(progress, 100)}%</span>
+            </div>
           </div>
         </div>
       </main>
 
-      {/* 4. FOOTER WITH QUICK SOCIAL & CONTACT CHANNELS */}
-      <footer className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 pb-4 sm:pb-6 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-slate-400 shrink-0">
-        <div className="flex items-center flex-wrap gap-2.5 sm:gap-4">
+      {/* 3. MINIMALIST FOOTER */}
+      <footer className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-8 pb-5 sm:pb-7 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-slate-400 shrink-0">
+        <div className="flex items-center flex-wrap gap-4">
           <a
             href={aboutData.linkedin}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => soundEngine.playClick()}
-            className="flex items-center gap-1 hover:text-cyan-400 transition-colors"
+            className="flex items-center gap-1 hover:text-white transition-colors"
           >
             <span>LinkedIn</span>
             <ExternalLink className="w-3 h-3" />
@@ -654,7 +543,7 @@ export const LoadingScreen = () => {
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => soundEngine.playClick()}
-            className="flex items-center gap-1 hover:text-cyan-400 transition-colors"
+            className="flex items-center gap-1 hover:text-white transition-colors"
           >
             <span>GitHub</span>
             <ExternalLink className="w-3 h-3" />
@@ -662,132 +551,134 @@ export const LoadingScreen = () => {
 
           <button
             onClick={handleCopyEmail}
-            className="flex items-center gap-1 hover:text-cyan-400 transition-colors cursor-pointer"
+            className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer"
           >
             {copiedEmail ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
             <span>{copiedEmail ? 'Copied!' : aboutData.email}</span>
           </button>
         </div>
 
-        <div className="hidden md:flex items-center gap-2 text-[11px] text-slate-500">
-          <span>Steer: <kbd className="px-1 bg-slate-800 text-cyan-300 rounded border border-slate-700">WASD</kbd></span>
+        <div className="hidden md:flex items-center gap-2 text-[11px] text-slate-400">
+          <span>Flight Controls: <kbd className="px-1.5 py-0.5 bg-white/[0.06] text-white rounded border border-white/[0.1]">WASD</kbd> Steer</span>
           <span>•</span>
-          <span>Altitude: <kbd className="px-1 bg-slate-800 text-cyan-300 rounded border border-slate-700">Space</kbd>/<kbd className="px-1 bg-slate-800 text-cyan-300 rounded border border-slate-700">Ctrl</kbd></span>
+          <span><kbd className="px-1.5 py-0.5 bg-white/[0.06] text-white rounded border border-white/[0.1]">Space</kbd>/<kbd className="px-1.5 py-0.5 bg-white/[0.06] text-white rounded border border-white/[0.1]">Ctrl</kbd> Altitude</span>
           <span>•</span>
-          <span>Lasers: <kbd className="px-1 bg-slate-800 text-cyan-300 rounded border border-slate-700">F</kbd></span>
+          <span><kbd className="px-1.5 py-0.5 bg-white/[0.06] text-white rounded border border-white/[0.1]">F</kbd> Fire</span>
         </div>
       </footer>
 
-      {/* 5. RECRUITER "AT-A-GLANCE" MODAL */}
+      {/* 4. RECRUITER 30S OVERVIEW MODAL */}
       {isRecruiterModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-2xl bg-[#090e1a] border border-cyan-500/50 rounded-2xl p-5 sm:p-6 shadow-[0_0_50px_rgba(0,240,255,0.2)] max-h-[90vh] overflow-y-auto">
-            {/* Header */}
-            <div className="flex items-start justify-between pb-3 mb-4 border-b border-slate-800">
-              <div>
-                <div className="flex items-center gap-2 text-white font-bold font-sans text-lg">
-                  <Award className="w-5 h-5 text-cyan-400" />
-                  <span>Executive Recruiter Summary</span>
-                </div>
-                <span className="text-xs font-mono text-cyan-400">
-                  Vishav Garg • 6+ Years Experience • Bengaluru, India
-                </span>
-              </div>
-              <button
-                onClick={() => {
-                  soundEngine.playClick();
-                  setIsRecruiterModalOpen(false);
-                }}
-                className="p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Core Value Statement */}
-            <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 mb-4 text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
-              {aboutData.summary}
-            </div>
-
-            {/* Key Accomplishments */}
-            <div className="mb-4">
-              <h3 className="text-xs font-mono font-bold text-cyan-400 mb-2 uppercase tracking-wide">
-                Key Enterprise Highlights
-              </h3>
-              <div className="space-y-2 text-xs text-slate-300 font-sans">
-                <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
-                  <strong className="text-white">Toyota Motor North America:</strong> Architected multi-brand frontend applications serving 50k+ daily users, improving page speeds by 38%.
-                </div>
-                <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
-                  <strong className="text-white">Procter & Gamble (Pampers):</strong> Built high-concurrency rewards and e-commerce portal handling 100k+ concurrent active sessions.
-                </div>
-                <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
-                  <strong className="text-white">PC Builder 3D & IoT:</strong> Engineered WebGL Three.js interactive configurators and real-time Bluetooth IoT telemetry dashboards.
-                </div>
-              </div>
-            </div>
-
-            {/* Core Tech Stack */}
-            <div className="mb-5">
-              <h3 className="text-xs font-mono font-bold text-cyan-400 mb-2 uppercase tracking-wide">
-                Core Competencies & Stack
-              </h3>
-              <div className="flex flex-wrap gap-1.5">
-                {[
-                  'React 19 / 18',
-                  'Next.js 15 / 14',
-                  'TypeScript',
-                  'Three.js / WebGL',
-                  'Vue.js / Nuxt 3',
-                  'Node.js / NestJS',
-                  'GraphQL / REST',
-                  'Tailwind CSS',
-                  'State (Zustand/Redux)',
-                  'Micro-Frontends',
-                  'Azure DevOps / CI/CD',
-                  'Performance (CWV)'
-                ].map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 border border-slate-700 text-[11px] font-mono"
-                  >
-                    {tech}
+          <div className="relative w-full max-w-2xl rounded-2xl p-1 bg-white/[0.08] border border-white/[0.15] shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="rounded-xl p-6 bg-[#080d18]/95">
+              {/* Header */}
+              <div className="flex items-start justify-between pb-3 mb-4 border-b border-white/[0.08]">
+                <div>
+                  <h3 className="text-lg font-bold font-sans text-white flex items-center gap-2">
+                    <Award className="w-5 h-5 text-[#f5d061]" />
+                    <span>Executive Recruiter Summary</span>
+                  </h3>
+                  <span className="text-xs font-mono text-slate-400">
+                    Vishav Garg • 6+ Years Experience • Bengaluru, India
                   </span>
-                ))}
-              </div>
-            </div>
-
-            {/* CTA Footer */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-800">
-              <div className="flex items-center gap-2">
+                </div>
                 <button
-                  onClick={handleCopyEmail}
-                  className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono text-xs flex items-center gap-1.5 cursor-pointer"
+                  onClick={() => {
+                    soundEngine.playClick();
+                    setIsRecruiterModalOpen(false);
+                  }}
+                  className="p-1.5 rounded-xl bg-white/[0.04] text-slate-400 hover:text-white cursor-pointer"
                 >
-                  {copiedEmail ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copiedEmail ? 'Email Copied!' : 'Copy Email'}</span>
+                  <X className="w-4 h-4" />
                 </button>
-                <a
-                  href={aboutData.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-2 rounded-xl bg-blue-900/40 hover:bg-blue-800/60 border border-blue-500/40 text-blue-300 font-mono text-xs flex items-center gap-1.5"
-                >
-                  <span>LinkedIn Profile</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
               </div>
 
-              <button
-                onClick={() => {
-                  setIsRecruiterModalOpen(false);
-                  handleStartTour();
-                }}
-                className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-mono font-bold text-xs tracking-wider flex items-center gap-1.5 cursor-pointer shadow-md"
-              >
-                <Play className="w-3.5 h-3.5 fill-slate-950" />
-                <span>START GUIDED 3D TOUR</span>
-              </button>
+              {/* Bio Summary */}
+              <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] mb-4 text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+                {aboutData.summary}
+              </div>
+
+              {/* Enterprise Highlights */}
+              <div className="mb-4">
+                <h4 className="text-xs font-mono font-bold text-white mb-2 uppercase tracking-wide">
+                  Enterprise Production Impact
+                </h4>
+                <div className="space-y-2 text-xs text-slate-300 font-sans">
+                  <div className="p-2.5 rounded-lg bg-black/40 border border-white/[0.04]">
+                    <strong className="text-white">Toyota Motor North America:</strong> Architected multi-brand frontend applications serving 50k+ daily users, improving page performance by 38%.
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-black/40 border border-white/[0.04]">
+                    <strong className="text-white">Procter & Gamble (Pampers):</strong> Built high-concurrency rewards and commerce ecosystem supporting 100k+ concurrent active sessions.
+                  </div>
+                  <div className="p-2.5 rounded-lg bg-black/40 border border-white/[0.04]">
+                    <strong className="text-white">PC Builder 3D & IoT:</strong> Engineered WebGL Three.js interactive configurators and real-time Bluetooth IoT telemetry dashboards.
+                  </div>
+                </div>
+              </div>
+
+              {/* Tech Stack */}
+              <div className="mb-5">
+                <h4 className="text-xs font-mono font-bold text-white mb-2 uppercase tracking-wide">
+                  Core Technologies
+                </h4>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    'React 19 / 18',
+                    'Next.js 15 / 14',
+                    'TypeScript',
+                    'Three.js / WebGL',
+                    'Vue.js / Nuxt 3',
+                    'Node.js / NestJS',
+                    'GraphQL / REST',
+                    'Tailwind CSS',
+                    'Zustand / Redux',
+                    'Micro-Frontends',
+                    'Azure DevOps / CI/CD',
+                    'Performance (CWV)'
+                  ].map((tech) => (
+                    <span
+                      key={tech}
+                      className="px-2.5 py-1 rounded-md bg-white/[0.04] text-slate-200 border border-white/[0.08] text-[11px] font-mono"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Footer Actions */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/[0.08]">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleCopyEmail}
+                    className="px-3.5 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 font-mono text-xs flex items-center gap-1.5 cursor-pointer"
+                  >
+                    {copiedEmail ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedEmail ? 'Email Copied!' : 'Copy Email'}</span>
+                  </button>
+                  <a
+                    href={aboutData.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-2 rounded-xl bg-blue-900/30 hover:bg-blue-800/40 border border-blue-400/30 text-blue-200 font-mono text-xs flex items-center gap-1.5"
+                  >
+                    <span>LinkedIn</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setIsRecruiterModalOpen(false);
+                    handleStartTour();
+                  }}
+                  className="px-5 py-2 rounded-full bg-white hover:bg-slate-100 text-slate-950 font-mono font-bold text-xs tracking-wider flex items-center gap-2 cursor-pointer shadow-md"
+                >
+                  <span>START GUIDED 3D TOUR</span>
+                  <Play className="w-3.5 h-3.5 fill-slate-950" />
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -57,18 +57,25 @@ export const shipClasses = [
 
 export const thrusterColorPresets = [
   {
+    id: 'gold',
+    name: 'Champagne Gold',
+    hex: '#f5d061',
+    glow: '#f5d061',
+    border: 'border-amber-300'
+  },
+  {
     id: 'cyan',
-    name: 'Cyan Pulse',
+    name: 'Arctic Azure',
     hex: '#00f0ff',
     glow: '#00f0ff',
     border: 'border-cyan-400'
   },
   {
-    id: 'magenta',
-    name: 'Neon Magenta',
-    hex: '#ec4899',
-    glow: '#ec4899',
-    border: 'border-pink-500'
+    id: 'platinum',
+    name: 'Starlight Platinum',
+    hex: '#f8fafc',
+    glow: '#f8fafc',
+    border: 'border-slate-200'
   },
   {
     id: 'emerald',
@@ -78,11 +85,11 @@ export const thrusterColorPresets = [
     border: 'border-emerald-400'
   },
   {
-    id: 'amber',
-    name: 'Solar Amber',
-    hex: '#f59e0b',
-    glow: '#f59e0b',
-    border: 'border-amber-400'
+    id: 'magenta',
+    name: 'Neon Magenta',
+    hex: '#ec4899',
+    glow: '#ec4899',
+    border: 'border-pink-500'
   },
   {
     id: 'purple',

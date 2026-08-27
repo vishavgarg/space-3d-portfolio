@@ -266,6 +266,59 @@ class SoundEngine {
     osc.stop(t + 0.2);
   }
 
+  // Play warp gate passed chime with high-speed sweep
+  playWarpPass(combo = 1) {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const t = this.ctx.currentTime;
+    const baseFreq = 520 + Math.min(combo, 5) * 110;
+    const freqs = [baseFreq, baseFreq * 1.25, baseFreq * 1.5, baseFreq * 2];
+
+    freqs.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t + idx * 0.03);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.2, t + idx * 0.03 + 0.15);
+
+      gain.gain.setValueAtTime(0.09, t + idx * 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.03 + 0.2);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc.start(t + idx * 0.03);
+      osc.stop(t + idx * 0.03 + 0.2);
+    });
+  }
+
+  // Play gate miss warning buzzer
+  playGateMiss() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(220, t);
+    osc.frequency.linearRampToValueAtTime(110, t + 0.22);
+
+    gain.gain.setValueAtTime(0.18, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(t);
+    osc.stop(t + 0.22);
+  }
+
   // Play player taking damage
   playPlayerDamage() {
     if (this.isMuted) return;
