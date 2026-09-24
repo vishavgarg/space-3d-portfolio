@@ -23,7 +23,7 @@ export const Toast = () => {
   };
 
   return (
-    <div className="fixed top-20 right-6 z-50 max-w-sm w-full animate-bounce pointer-events-auto">
+    <div className="fixed top-20 right-6 z-50 max-w-sm w-full animate-bounce pointer-events-auto hidden md:block">
       <div
         className={`p-4 rounded-2xl border backdrop-blur-xl shadow-[0_10px_35px_rgba(0,0,0,0.6)] flex items-start gap-3 transition-all ${
           borderColors[type] || borderColors.info

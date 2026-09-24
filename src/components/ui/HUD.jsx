@@ -118,10 +118,10 @@ export const HUD = () => {
             <span className="text-[9px] text-slate-400 hidden lg:inline">({targetsHit.length}/14 SKILLS)</span>
           </div>
 
-          {/* Hangar Customizer */}
+          {/* Hangar Customizer (hidden on mobile — accessible from drawer) */}
           <button
             onClick={() => setActiveModal('hangar')}
-            className="p-2 sm:p-2.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-cyan-500/50 text-cyan-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md"
+            className="hidden md:flex p-2 sm:p-2.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-cyan-500/50 text-cyan-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md items-center justify-center"
             title="Starfleet Hangar & Ship Customizer"
             aria-label="Starfleet Hangar"
           >
@@ -138,10 +138,10 @@ export const HUD = () => {
             {isAudioMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-cyan-400" />}
           </button>
 
-          {/* Controls Help Modal */}
+          {/* Controls Help Modal (hidden on mobile — on-screen touch controls are self-explanatory) */}
           <button
             onClick={() => setActiveModal('controls')}
-            className="p-2 sm:p-2.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-slate-700/70 text-slate-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md"
+            className="hidden md:flex p-2 sm:p-2.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-slate-700/70 text-slate-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md items-center justify-center"
             title="Flight Controls & Keybindings"
             aria-label="Controls Help"
           >
@@ -159,8 +159,8 @@ export const HUD = () => {
         </div>
       </div>
 
-      {/* 2. MOBILE TOP-CENTER FLOATING DESTINATIONS PILL (When drawer is closed) */}
-      <div className="md:hidden flex justify-center pointer-events-auto mt-2">
+      {/* 2. MOBILE BOTTOM-CENTER FLOATING DESTINATIONS PILL (above flight controls) */}
+      <div className="md:hidden fixed bottom-44 left-1/2 -translate-x-1/2 z-50 pointer-events-auto">
         <button
           onClick={() => setIsNavDrawerOpen(true)}
           className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-950/90 border border-cyan-500/50 text-cyan-300 text-xs font-mono font-bold shadow-[0_0_20px_rgba(0,240,255,0.25)] backdrop-blur-xl transition-all active:scale-95 cursor-pointer"
