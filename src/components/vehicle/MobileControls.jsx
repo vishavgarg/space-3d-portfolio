@@ -1,13 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useDeviceCapability } from '../../hooks/useDeviceCapability';
 import { useUIStore } from '../../store/uiStore';
 import { 
   Crosshair, 
   Zap, 
-  ArrowUp, 
-  ArrowDown, 
-  ArrowLeft, 
-  ArrowRight,
   ChevronsUp,
   ChevronsDown,
   RotateCcw
@@ -18,6 +14,14 @@ export const MobileControls = () => {
   const hasStartedExperience = useUIStore((s) => s.hasStartedExperience);
 
   const [activeButtons, setActiveButtons] = useState({});
+
+  // Joystick state
+  const [joystickOffset, setJoystickOffset] = useState({ x: 0, y: 0 });
+  const [isJoystickActive, setIsJoystickActive] = useState(false);
+  const joystickRef = useRef(null);
+  const activeDirectionsRef = useRef({ forward: false, backward: false, left: false, right: false });
+  const joystickRadius = 52; // max travel distance in px
+  const deadZone = 0.25; // ignore tiny movements (fraction of radius)
 
   const triggerVibrate = () => {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
@@ -44,88 +48,132 @@ export const MobileControls = () => {
     if (active) triggerVibrate();
   }, []);
 
+  // --- Joystick touch handlers ---
+  const getTouchOffset = useCallback((touch) => {
+    if (!joystickRef.current) return { x: 0, y: 0 };
+    const rect = joystickRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    let dx = touch.clientX - centerX;
+    let dy = touch.clientY - centerY;
+
+    // Clamp to radius
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist > joystickRadius) {
+      dx = (dx / dist) * joystickRadius;
+      dy = (dy / dist) * joystickRadius;
+    }
+    return { x: dx, y: dy };
+  }, []);
+
+  const updateDirections = useCallback((dx, dy) => {
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const normalizedDist = dist / joystickRadius;
+
+    const prev = activeDirectionsRef.current;
+    let forward = false, backward = false, left = false, right = false;
+
+    if (normalizedDist > deadZone) {
+      // Use angle to determine which directions are active
+      // Allow diagonals naturally by using thresholds
+      const angle = Math.atan2(dy, dx); // radians, 0=right, PI/2=down
+
+      // Forward = up = negative Y
+      forward = dy < -joystickRadius * deadZone;
+      backward = dy > joystickRadius * deadZone;
+      left = dx < -joystickRadius * deadZone;
+      right = dx > joystickRadius * deadZone;
+    }
+
+    // Only dispatch events when state changes
+    if (forward !== prev.forward) setControlState('forward', 'KeyW', forward);
+    if (backward !== prev.backward) setControlState('backward', 'KeyS', backward);
+    if (left !== prev.left) setControlState('left', 'KeyA', left);
+    if (right !== prev.right) setControlState('right', 'KeyD', right);
+
+    activeDirectionsRef.current = { forward, backward, left, right };
+  }, [setControlState]);
+
+  const handleJoystickStart = useCallback((e) => {
+    e.preventDefault();
+    setIsJoystickActive(true);
+    const touch = e.touches[0];
+    const offset = getTouchOffset(touch);
+    setJoystickOffset(offset);
+    updateDirections(offset.x, offset.y);
+    triggerVibrate();
+  }, [getTouchOffset, updateDirections]);
+
+  const handleJoystickMove = useCallback((e) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const offset = getTouchOffset(touch);
+    setJoystickOffset(offset);
+    updateDirections(offset.x, offset.y);
+  }, [getTouchOffset, updateDirections]);
+
+  const handleJoystickEnd = useCallback((e) => {
+    e.preventDefault();
+    setIsJoystickActive(false);
+    setJoystickOffset({ x: 0, y: 0 });
+    // Release all directions
+    const prev = activeDirectionsRef.current;
+    if (prev.forward) setControlState('forward', 'KeyW', false);
+    if (prev.backward) setControlState('backward', 'KeyS', false);
+    if (prev.left) setControlState('left', 'KeyA', false);
+    if (prev.right) setControlState('right', 'KeyD', false);
+    activeDirectionsRef.current = { forward: false, backward: false, left: false, right: false };
+  }, [setControlState]);
+
   if (!isMobile || !hasStartedExperience) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-4 sm:bottom-6 z-40 px-3 sm:px-6 flex items-end justify-between pointer-events-none select-none pb-safe">
-      {/* LEFT: 4-Way Steering D-Pad */}
-      <div className="relative w-36 h-36 sm:w-40 sm:h-40 bg-slate-950/75 rounded-3xl border border-cyan-500/30 backdrop-blur-xl p-2 pointer-events-auto shadow-[0_0_30px_rgba(0,0,0,0.6)] flex items-center justify-center touch-none">
-        {/* Center Indicator */}
-        <div className="w-10 h-10 rounded-full bg-slate-900/90 border border-slate-700/60 flex items-center justify-center">
-          <div className="w-3 h-3 rounded-full bg-cyan-400/60 animate-ping" style={{ animationDuration: '3s' }} />
+    <div className="fixed inset-x-0 bottom-4 sm:bottom-6 z-40 px-3 sm:px-6 flex items-end justify-between pointer-events-none select-none">
+      {/* LEFT: Round Virtual Joystick */}
+      <div
+        ref={joystickRef}
+        onTouchStart={handleJoystickStart}
+        onTouchMove={handleJoystickMove}
+        onTouchEnd={handleJoystickEnd}
+        onTouchCancel={handleJoystickEnd}
+        className="relative w-36 h-36 sm:w-40 sm:h-40 pointer-events-auto touch-none"
+        style={{ WebkitTouchCallout: 'none' }}
+      >
+        {/* Outer ring (base) */}
+        <div className={`absolute inset-0 rounded-full border-2 transition-colors duration-150 ${
+          isJoystickActive
+            ? 'border-cyan-400/60 bg-slate-950/60 shadow-[0_0_30px_rgba(0,240,255,0.15)]'
+            : 'border-slate-700/50 bg-slate-950/50'
+        } backdrop-blur-xl`}>
+          {/* Crosshair guides */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className={`absolute w-px h-8 top-3 transition-colors ${isJoystickActive ? 'bg-cyan-500/40' : 'bg-slate-700/30'}`} />
+            <div className={`absolute w-px h-8 bottom-3 transition-colors ${isJoystickActive ? 'bg-cyan-500/40' : 'bg-slate-700/30'}`} />
+            <div className={`absolute h-px w-8 left-3 transition-colors ${isJoystickActive ? 'bg-cyan-500/40' : 'bg-slate-700/30'}`} />
+            <div className={`absolute h-px w-8 right-3 transition-colors ${isJoystickActive ? 'bg-cyan-500/40' : 'bg-slate-700/30'}`} />
+          </div>
         </div>
 
-        {/* FORWARD (W) */}
-        <button
-          onTouchStart={(e) => { e.preventDefault(); setControlState('forward', 'KeyW', true); }}
-          onTouchEnd={(e) => { e.preventDefault(); setControlState('forward', 'KeyW', false); }}
-          onTouchCancel={(e) => { e.preventDefault(); setControlState('forward', 'KeyW', false); }}
-          onMouseDown={() => setControlState('forward', 'KeyW', true)}
-          onMouseUp={() => setControlState('forward', 'KeyW', false)}
-          onMouseLeave={() => setControlState('forward', 'KeyW', false)}
-          className={`absolute top-2 w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${
-            activeButtons.forward
-              ? 'bg-cyan-400 text-slate-950 scale-95 shadow-[0_0_15px_#00f0ff]'
-              : 'bg-slate-900/90 border border-slate-700/80 text-slate-300'
+        {/* Inner knob (thumb) */}
+        <div
+          className={`absolute rounded-full transition-shadow duration-100 flex items-center justify-center ${
+            isJoystickActive
+              ? 'bg-cyan-400/90 shadow-[0_0_20px_rgba(0,240,255,0.6)] scale-110'
+              : 'bg-slate-700/80 border border-slate-600/60 shadow-lg'
           }`}
-          aria-label="Forward"
+          style={{
+            width: 48,
+            height: 48,
+            left: '50%',
+            top: '50%',
+            transform: `translate(calc(-50% + ${joystickOffset.x}px), calc(-50% + ${joystickOffset.y}px))`,
+            transition: isJoystickActive ? 'none' : 'transform 0.2s ease-out',
+          }}
         >
-          <ArrowUp className="w-6 h-6 stroke-[2.5]" />
-        </button>
-
-        {/* BACKWARD (S) */}
-        <button
-          onTouchStart={(e) => { e.preventDefault(); setControlState('backward', 'KeyS', true); }}
-          onTouchEnd={(e) => { e.preventDefault(); setControlState('backward', 'KeyS', false); }}
-          onTouchCancel={(e) => { e.preventDefault(); setControlState('backward', 'KeyS', false); }}
-          onMouseDown={() => setControlState('backward', 'KeyS', true)}
-          onMouseUp={() => setControlState('backward', 'KeyS', false)}
-          onMouseLeave={() => setControlState('backward', 'KeyS', false)}
-          className={`absolute bottom-2 w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${
-            activeButtons.backward
-              ? 'bg-cyan-400 text-slate-950 scale-95 shadow-[0_0_15px_#00f0ff]'
-              : 'bg-slate-900/90 border border-slate-700/80 text-slate-300'
-          }`}
-          aria-label="Backward"
-        >
-          <ArrowDown className="w-6 h-6 stroke-[2.5]" />
-        </button>
-
-        {/* TURN LEFT (A) */}
-        <button
-          onTouchStart={(e) => { e.preventDefault(); setControlState('left', 'KeyA', true); }}
-          onTouchEnd={(e) => { e.preventDefault(); setControlState('left', 'KeyA', false); }}
-          onTouchCancel={(e) => { e.preventDefault(); setControlState('left', 'KeyA', false); }}
-          onMouseDown={() => setControlState('left', 'KeyA', true)}
-          onMouseUp={() => setControlState('left', 'KeyA', false)}
-          onMouseLeave={() => setControlState('left', 'KeyA', false)}
-          className={`absolute left-2 w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${
-            activeButtons.left
-              ? 'bg-cyan-400 text-slate-950 scale-95 shadow-[0_0_15px_#00f0ff]'
-              : 'bg-slate-900/90 border border-slate-700/80 text-slate-300'
-          }`}
-          aria-label="Turn Left"
-        >
-          <ArrowLeft className="w-6 h-6 stroke-[2.5]" />
-        </button>
-
-        {/* TURN RIGHT (D) */}
-        <button
-          onTouchStart={(e) => { e.preventDefault(); setControlState('right', 'KeyD', true); }}
-          onTouchEnd={(e) => { e.preventDefault(); setControlState('right', 'KeyD', false); }}
-          onTouchCancel={(e) => { e.preventDefault(); setControlState('right', 'KeyD', false); }}
-          onMouseDown={() => setControlState('right', 'KeyD', true)}
-          onMouseUp={() => setControlState('right', 'KeyD', false)}
-          onMouseLeave={() => setControlState('right', 'KeyD', false)}
-          className={`absolute right-2 w-11 h-11 rounded-2xl flex items-center justify-center transition-all ${
-            activeButtons.right
-              ? 'bg-cyan-400 text-slate-950 scale-95 shadow-[0_0_15px_#00f0ff]'
-              : 'bg-slate-900/90 border border-slate-700/80 text-slate-300'
-          }`}
-          aria-label="Turn Right"
-        >
-          <ArrowRight className="w-6 h-6 stroke-[2.5]" />
-        </button>
+          <div className={`w-2.5 h-2.5 rounded-full transition-colors ${
+            isJoystickActive ? 'bg-white' : 'bg-cyan-400/60'
+          }`} />
+        </div>
       </div>
 
       {/* RIGHT: Action Cluster (Altitude, Nitro, Laser, Reset) */}

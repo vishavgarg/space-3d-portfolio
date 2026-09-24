@@ -4,7 +4,8 @@
 class SoundEngine {
   constructor() {
     this.ctx = null;
-    this.isMuted = false;
+    this.isMuted = false; // Controls sound effects (laser firing, hits, explosions) - unmuted by default
+    this.isMusicEnabled = false; // Controls continuous background music - OFF by default
     this.ambientGain = null;
     this.ambientOscs = [];
     this.isAmbientPlaying = false;
@@ -25,13 +26,27 @@ class SoundEngine {
   setMuted(muted) {
     this.isMuted = muted;
     if (this.ambientGain && this.ctx) {
-      this.ambientGain.gain.setValueAtTime(this.isMuted ? 0 : 0.04, this.ctx.currentTime);
+      this.ambientGain.gain.setValueAtTime((this.isMuted || !this.isMusicEnabled) ? 0 : 0.025, this.ctx.currentTime);
     }
   }
 
   toggleMute() {
     this.setMuted(!this.isMuted);
     return this.isMuted;
+  }
+
+  setMusicEnabled(enabled) {
+    this.isMusicEnabled = enabled;
+    if (enabled) {
+      this.startAmbient(true);
+    } else {
+      this.stopAmbient();
+    }
+    return this.isMusicEnabled;
+  }
+
+  toggleMusic() {
+    return this.setMusicEnabled(!this.isMusicEnabled);
   }
 
   // Play player laser / projectile shot
@@ -371,13 +386,14 @@ class SoundEngine {
   }
 
   // Start subtle cyber ambient chord generator
-  startAmbient() {
+  startAmbient(force = false) {
+    if (!this.isMusicEnabled && !force) return;
     if (this.isAmbientPlaying) return;
     this.init();
     if (!this.ctx) return;
 
     this.ambientGain = this.ctx.createGain();
-    this.ambientGain.gain.setValueAtTime(this.isMuted ? 0 : 0.025, this.ctx.currentTime);
+    this.ambientGain.gain.setValueAtTime((this.isMuted || !this.isMusicEnabled) ? 0 : 0.025, this.ctx.currentTime);
     this.ambientGain.connect(this.ctx.destination);
 
     // Warm ambient cyber drone: D minor 9th (D2, A2, F3, C4, E4)

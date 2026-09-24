@@ -125,7 +125,7 @@ ${aboutData.education.institution} (${aboutData.education.period})
   const isPaper = themeMode === 'paper';
 
   return (
-    <div className={`printable-resume-root relative min-h-screen w-full font-sans selection:bg-cyan-500 selection:text-black touch-scroll pt-safe pb-safe transition-colors duration-300 print:min-h-0 print:p-0 print:m-0 print:static print:overflow-visible print:bg-white print:text-slate-950 ${
+    <div className={`printable-resume-root relative min-h-screen w-full font-sans selection:bg-cyan-500 selection:text-black touch-scroll transition-colors duration-300 print:min-h-0 print:p-0 print:m-0 print:static print:overflow-visible print:bg-white print:text-slate-950 ${
       isPaper ? 'bg-slate-100 text-slate-900' : 'bg-[#050811] text-slate-100'
     }`}>
       

@@ -77,7 +77,7 @@ export const HangarModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-lg overflow-y-auto animate-in fade-in duration-200 pt-safe pb-safe">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-lg overflow-y-auto animate-in fade-in duration-200">
       <div className="relative w-full max-w-4xl bg-[#090e1a] border border-cyan-500/40 rounded-3xl shadow-[0_0_60px_rgba(0,240,255,0.15)] overflow-hidden flex flex-col my-auto max-h-[90vh]">
         {/* Modal Header */}
         <div className="p-4 sm:p-6 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between gap-3">

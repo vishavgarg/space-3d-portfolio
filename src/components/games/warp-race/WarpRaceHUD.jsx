@@ -53,7 +53,7 @@ export const WarpRaceHUD = () => {
       )}
 
       {/* 2. Top Header Status Bar */}
-      <div className="fixed top-3 sm:top-5 inset-x-0 flex flex-col items-center gap-2 pointer-events-auto px-2 pt-safe">
+      <div className="fixed top-3 sm:top-5 inset-x-0 flex flex-col items-center gap-2 pointer-events-auto px-2">
         <div className="flex items-center gap-2.5 sm:gap-6 px-3 sm:px-6 py-1.5 sm:py-2.5 rounded-2xl bg-slate-950/90 backdrop-blur-md border border-purple-500/40 shadow-2xl shadow-purple-500/10 max-w-full overflow-x-auto no-scrollbar">
           {/* Level Badge */}
           <div className="flex items-center gap-1 sm:gap-1.5 text-purple-400 font-mono font-bold text-xs sm:text-sm shrink-0">

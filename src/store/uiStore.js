@@ -5,7 +5,8 @@ export const useUIStore = create((set, get) => ({
   activeModal: null, // null | 'about' | 'project' | 'skills' | 'contact' | 'experience' | 'help' | 'controls'
   selectedProject: null, // Project object
   isClassicMode: false,
-  isAudioMuted: false,
+  isAudioMuted: false, // Sound effects (firing, hits, UI) active by default
+  isMusicEnabled: false, // Continuous background music turned OFF by default
   hasStartedExperience: false,
   isHUDVisible: true,
   activeToast: null,
@@ -37,9 +38,17 @@ export const useUIStore = create((set, get) => ({
     set({ isAudioMuted: isMuted });
   },
 
+  toggleMusic: () => {
+    const isMusic = soundEngine.toggleMusic();
+    set({ isMusicEnabled: isMusic });
+  },
+
   startExperience: () => {
     soundEngine.init();
-    soundEngine.startAmbient();
+    // Continuous ambient music is OFF by default. Only start if user enabled it.
+    if (get().isMusicEnabled) {
+      soundEngine.startAmbient();
+    }
     soundEngine.playZoneTransition();
     set({ hasStartedExperience: true });
   },

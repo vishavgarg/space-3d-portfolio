@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronLeft, X, Compass, ExternalLink, Sparkles, Minimize2, Maximize2, Home } from 'lucide-react';
+import { ChevronRight, ChevronLeft, X, Compass, ExternalLink, Sparkles, Minimize2, Maximize2, Home, Music, Volume2, VolumeX } from 'lucide-react';
 import { useTourStore, tourStops } from '../../store/tourStore';
 import { useUIStore } from '../../store/uiStore';
 
@@ -14,6 +14,10 @@ export const TourHUD = () => {
 
   const activeModal = useUIStore((s) => s.activeModal);
   const setActiveModal = useUIStore((s) => s.setActiveModal);
+  const isAudioMuted = useUIStore((s) => s.isAudioMuted);
+  const toggleAudio = useUIStore((s) => s.toggleAudio);
+  const isMusicEnabled = useUIStore((s) => s.isMusicEnabled);
+  const toggleMusic = useUIStore((s) => s.toggleMusic);
 
   const [isMinimized, setIsMinimized] = useState(false);
 
@@ -31,7 +35,7 @@ export const TourHUD = () => {
   };
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-40 select-none flex flex-col justify-between p-3 sm:p-6 pt-safe pb-safe">
+    <div className="fixed inset-0 pointer-events-none z-40 select-none flex flex-col justify-between p-3 sm:p-6">
       {/* 1. Top Sleek Tour Progress Bar */}
       <div className="flex justify-center pointer-events-auto">
         <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl bg-slate-950/85 border border-cyan-500/30 backdrop-blur-md shadow-2xl">
@@ -64,6 +68,30 @@ export const TourHUD = () => {
           </div>
 
           <div className="h-4 w-px bg-slate-800 ml-1" />
+
+          {/* Background Music Toggle */}
+          <button
+            onClick={toggleMusic}
+            className={`p-1.5 rounded-xl border transition-all cursor-pointer ${
+              isMusicEnabled 
+                ? 'bg-cyan-950/80 border-cyan-500/60 text-cyan-300' 
+                : 'bg-slate-900 border-slate-800 text-slate-500 hover:text-slate-300'
+            }`}
+            title={isMusicEnabled ? 'Background Music: ON (Click to mute)' : 'Background Music: OFF (Click to turn on)'}
+            aria-label="Toggle Background Music"
+          >
+            <Music className="w-3.5 h-3.5" />
+          </button>
+
+          {/* Sound FX Toggle */}
+          <button
+            onClick={toggleAudio}
+            className="p-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white transition-all cursor-pointer"
+            title={isAudioMuted ? 'Sound FX: MUTED (Click to unmute)' : 'Sound FX: ACTIVE (Click to mute)'}
+            aria-label="Toggle Sound Effects"
+          >
+            {isAudioMuted ? <VolumeX className="w-3.5 h-3.5 text-rose-400" /> : <Volume2 className="w-3.5 h-3.5 text-cyan-400" />}
+          </button>
 
           {/* Home Button */}
           <button

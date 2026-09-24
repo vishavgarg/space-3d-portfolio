@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useUIStore } from '../../store/uiStore';
 import { usePlayerStore } from '../../store/playerStore';
 import { useGameStore } from '../../store/gameStore';
@@ -8,6 +9,7 @@ import { soundEngine } from '../../utils/soundEngine';
 import { 
   Volume2, 
   VolumeX, 
+  Music,
   FileText, 
   Crosshair, 
   Briefcase, 
@@ -16,13 +18,12 @@ import {
   HelpCircle, 
   Trophy, 
   Compass, 
-  RotateCcw,
   Sparkles,
   Rocket,
-  ChevronUp,
   X,
   Menu,
-  Home
+  Home,
+  ChevronRight
 } from 'lucide-react';
 
 export const HUD = () => {
@@ -30,6 +31,9 @@ export const HUD = () => {
   const resetToSpawn = usePlayerStore((s) => s.resetToSpawn);
   const isAudioMuted = useUIStore((s) => s.isAudioMuted);
   const toggleAudio = useUIStore((s) => s.toggleAudio);
+  const isMusicEnabled = useUIStore((s) => s.isMusicEnabled);
+  const toggleMusic = useUIStore((s) => s.toggleMusic);
+  const showToast = useUIStore((s) => s.showToast);
   const setActiveModal = useUIStore((s) => s.setActiveModal);
   const goHome = useUIStore((s) => s.goHome);
   const startTour = useTourStore((s) => s.startTour);
@@ -72,47 +76,143 @@ export const HUD = () => {
     }
   };
 
-  return (
-    <div className="fixed inset-0 pointer-events-none z-30 flex flex-col justify-between p-3 sm:p-6 select-none pt-safe pb-safe">
-      {/* 1. TOP HEADER BAR */}
-      <div className="flex items-start justify-between w-full gap-2">
-        {/* Left: Current Zone Radar Badge */}
-        <div className="flex flex-col gap-1.5 pointer-events-auto">
-          <div className={`flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-2xl bg-slate-950/85 border ${currentZoneData.border} backdrop-blur-md shadow-lg shadow-black/40`}>
-            <Compass className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${currentZoneData.color} animate-spin`} style={{ animationDuration: '8s' }} />
-            <div>
-              <span className={`text-[11px] sm:text-xs font-mono font-bold tracking-wide uppercase ${currentZoneData.color} block leading-tight`}>
-                <span className="sm:hidden">{currentZoneData.name}</span>
-                <span className="hidden sm:inline">{currentZoneData.full}</span>
-              </span>
-              <span className="text-[9px] sm:text-[10px] text-slate-400 font-mono hidden xs:block leading-none mt-0.5">
-                {currentZoneData.tag}
-              </span>
-            </div>
-          </div>
+  const navItems = [
+    {
+      id: 'home',
+      title: 'COMMAND HUB',
+      desc: 'Central Core & 3D Typo',
+      icon: <Home className="w-4 h-4 text-cyan-400" />,
+      bg: 'bg-cyan-950/60',
+      border: 'border-cyan-500/30',
+      textColor: 'text-cyan-300'
+    },
+    {
+      id: 'tour',
+      title: 'GUIDED TOUR',
+      desc: 'Cinematic Autopilot Flythrough',
+      icon: <Sparkles className="w-4 h-4 text-amber-400" />,
+      bg: 'bg-amber-950/60',
+      border: 'border-amber-500/30',
+      textColor: 'text-amber-300'
+    },
+    {
+      id: 'about',
+      title: 'ABOUT VISHAV',
+      desc: 'Bio & 6+ Years Experience',
+      icon: <User className="w-4 h-4 text-pink-400" />,
+      bg: 'bg-pink-950/60',
+      border: 'border-pink-500/30',
+      textColor: 'text-pink-300'
+    },
+    {
+      id: 'projects',
+      title: 'PROJECTS GALLERY',
+      desc: 'Toyota, Pampers & 3D Apps',
+      icon: <Briefcase className="w-4 h-4 text-blue-400" />,
+      bg: 'bg-blue-950/60',
+      border: 'border-blue-500/30',
+      textColor: 'text-blue-300'
+    },
+    {
+      id: 'skills',
+      title: 'SKILLS ARENA',
+      desc: 'Target Practice Mini-Game',
+      icon: <Crosshair className="w-4 h-4 text-emerald-400" />,
+      bg: 'bg-emerald-950/60',
+      border: 'border-emerald-500/30',
+      textColor: 'text-emerald-300'
+    },
+    {
+      id: 'experience',
+      title: 'CAREER TIMELINE',
+      desc: 'Experience & Milestones',
+      icon: <Sparkles className="w-4 h-4 text-purple-400" />,
+      bg: 'bg-purple-950/60',
+      border: 'border-purple-500/30',
+      textColor: 'text-purple-300'
+    },
+    {
+      id: 'hangar',
+      title: 'STARFLEET HANGAR',
+      desc: 'Ship Customizer & Thrusters',
+      icon: <Rocket className="w-4 h-4 text-cyan-400" />,
+      bg: 'bg-cyan-950/60',
+      border: 'border-cyan-500/30',
+      textColor: 'text-cyan-300'
+    },
+    {
+      id: 'contact',
+      title: 'CONTACT SPIRE',
+      desc: 'Email & Direct Message',
+      icon: <Mail className="w-4 h-4 text-rose-400" />,
+      bg: 'bg-rose-950/60',
+      border: 'border-rose-500/30',
+      textColor: 'text-rose-300'
+    },
+    {
+      id: 'classic',
+      title: 'CLASSIC CV',
+      desc: 'Printable HTML Resume',
+      icon: <FileText className="w-4 h-4 text-slate-300" />,
+      bg: 'bg-slate-800/60',
+      border: 'border-slate-600/30',
+      textColor: 'text-slate-200'
+    }
+  ];
 
-          {/* Pilot Callout (Desktop only) */}
-          <div className="hidden md:flex items-center gap-3 text-[11px] text-slate-400 bg-slate-900/70 border border-slate-800 px-3 py-1 rounded-lg backdrop-blur-md">
-            <span>PILOT: <strong className="text-white">VISHAV GARG</strong></span>
-            <span>•</span>
-            <span>SYSTEM: <strong className="text-emerald-400">ONLINE (60 FPS)</strong></span>
+  return (
+    <div className="fixed inset-0 pointer-events-none z-30 flex flex-col justify-between p-3 pt-5 sm:p-4 sm:pt-3 md:px-6 md:pt-2.5 md:pb-5 select-none">
+      {/* 1. TOP HEADER BAR */}
+      <div className="flex items-center justify-between w-full gap-2 mt-1 sm:mt-0">
+        {/* Left: 3-Line Menu Button on Mobile, Zone Radar Badge on Desktop */}
+        <div className="flex items-center gap-2 pointer-events-auto">
+          {/* 3-Line Menu Button (Mobile Only, Aligned Left) */}
+          <button
+            onClick={() => setIsNavDrawerOpen(true)}
+            className="md:hidden p-2 sm:p-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-cyan-500/50 text-cyan-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md flex items-center justify-center"
+            title="Warp Destinations Menu"
+            aria-label="Open Navigation Menu"
+          >
+            <Menu className="w-4 h-4 text-cyan-400" />
+          </button>
+
+          {/* Current Zone Radar Badge (Hidden on mobile, shown on desktop) */}
+          <div className="hidden md:flex flex-col gap-1">
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-slate-950/85 border ${currentZoneData.border} backdrop-blur-md shadow-lg shadow-black/40`}>
+              <Compass className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${currentZoneData.color} animate-spin`} style={{ animationDuration: '8s' }} />
+              <div>
+                <span className={`text-[11px] sm:text-xs font-mono font-bold tracking-wide uppercase ${currentZoneData.color} block leading-tight`}>
+                  <span>{currentZoneData.full}</span>
+                </span>
+                <span className="text-[9px] sm:text-[10px] text-slate-400 font-mono hidden xs:block leading-none mt-0.5">
+                  {currentZoneData.tag}
+                </span>
+              </div>
+            </div>
+
+            {/* Pilot Callout (Desktop only) */}
+            <div className="flex items-center gap-2.5 text-[10px] text-slate-400 bg-slate-900/70 border border-slate-800 px-2.5 py-0.5 rounded-lg backdrop-blur-md">
+              <span>PILOT: <strong className="text-white">VISHAV GARG</strong></span>
+              <span>•</span>
+              <span>SYSTEM: <strong className="text-emerald-400">ONLINE (60 FPS)</strong></span>
+            </div>
           </div>
         </div>
 
         {/* Right: Score Counter & Utility Quick-Actions */}
-        <div className="flex items-center gap-1.5 sm:gap-2.5 pointer-events-auto">
+        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-1.5 pointer-events-auto">
           {/* Home — back to landing screen */}
           <button
             onClick={handleGoHome}
-            className="p-2 sm:p-2.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-slate-700/70 text-slate-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md"
+            className="p-2 md:p-1.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-slate-700/70 text-slate-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md"
             title="Back to Landing Screen"
             aria-label="Back to Landing Screen"
           >
-            <Home className="w-4 h-4 text-slate-300" />
+            <Home className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-300" />
           </button>
 
           {/* Score Badge */}
-          <div className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-slate-900/85 border border-amber-500/40 text-amber-300 backdrop-blur-md shadow-lg">
+          <div className="flex items-center gap-1.5 px-2.5 py-1.5 md:px-2.5 md:py-1 rounded-xl bg-slate-900/85 border border-amber-500/40 text-amber-300 backdrop-blur-md shadow-lg">
             <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 shrink-0" />
             <span className="text-[11px] sm:text-xs font-bold font-mono">{score} <span className="hidden xs:inline">PTS</span></span>
             <span className="text-[9px] text-slate-400 hidden lg:inline">({targetsHit.length}/14 SKILLS)</span>
@@ -121,27 +221,62 @@ export const HUD = () => {
           {/* Hangar Customizer (hidden on mobile — accessible from drawer) */}
           <button
             onClick={() => setActiveModal('hangar')}
-            className="hidden md:flex p-2 sm:p-2.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-cyan-500/50 text-cyan-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md items-center justify-center"
+            className="hidden md:flex p-1.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-cyan-500/50 text-cyan-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md items-center justify-center"
             title="Starfleet Hangar & Ship Customizer"
             aria-label="Starfleet Hangar"
           >
             <Rocket className="w-4 h-4 text-cyan-400" />
           </button>
 
-          {/* Sound Toggle */}
+          {/* Continuous Ambient Music Toggle (Off by default) */}
           <button
-            onClick={toggleAudio}
-            className="p-2 sm:p-2.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-slate-700/70 text-slate-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md"
-            title={isAudioMuted ? 'Unmute Audio' : 'Mute Audio'}
-            aria-label="Toggle Audio"
+            onClick={() => {
+              toggleMusic();
+              const willBeEnabled = !isMusicEnabled;
+              showToast(
+                'AUDIO SYSTEM',
+                willBeEnabled ? 'Background ambient synth music enabled' : 'Background music disabled',
+                'info'
+              );
+            }}
+            className={`p-2 md:p-1.5 rounded-xl border backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md relative ${
+              isMusicEnabled 
+                ? 'bg-cyan-950/70 border-cyan-500/60 text-cyan-300 hover:text-white shadow-[0_0_12px_rgba(0,240,255,0.25)]' 
+                : 'bg-slate-900/85 hover:bg-slate-800 border-slate-700/70 text-slate-400 hover:text-slate-200'
+            }`}
+            title={isMusicEnabled ? 'Background Music: ON (Click to turn off)' : 'Background Music: OFF (Click to turn on continuous music)'}
+            aria-label="Toggle Background Music"
           >
-            {isAudioMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-cyan-400" />}
+            <Music className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            {!isMusicEnabled && (
+              <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-slate-600" />
+              </span>
+            )}
+          </button>
+
+          {/* Sound Effects Toggle (Firing, impacts, UI - On by default) */}
+          <button
+            onClick={() => {
+              toggleAudio();
+              const willBeMuted = !isAudioMuted;
+              showToast(
+                'AUDIO SYSTEM',
+                willBeMuted ? 'Sound effects (firing, impacts) muted' : 'Sound effects enabled',
+                'info'
+              );
+            }}
+            className="p-2 md:p-1.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-slate-700/70 text-slate-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md"
+            title={isAudioMuted ? 'Sound FX: MUTED (Click to enable laser firing & sound FX)' : 'Sound FX: ACTIVE (Laser firing & sounds on - Click to mute)'}
+            aria-label="Toggle Sound Effects"
+          >
+            {isAudioMuted ? <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-400" /> : <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400" />}
           </button>
 
           {/* Controls Help Modal (hidden on mobile — on-screen touch controls are self-explanatory) */}
           <button
             onClick={() => setActiveModal('controls')}
-            className="hidden md:flex p-2 sm:p-2.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-slate-700/70 text-slate-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md items-center justify-center"
+            className="hidden md:flex p-1.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-slate-700/70 text-slate-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md items-center justify-center"
             title="Flight Controls & Keybindings"
             aria-label="Controls Help"
           >
@@ -151,7 +286,7 @@ export const HUD = () => {
           {/* Classic Resume Mode Toggle (Desktop) */}
           <button
             onClick={() => setClassicMode(true)}
-            className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-cyan-950/70 hover:bg-cyan-900/80 border border-cyan-500/50 text-cyan-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer text-xs font-bold shadow-md"
+            className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-cyan-950/70 hover:bg-cyan-900/80 border border-cyan-500/50 text-cyan-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer text-xs font-bold shadow-md"
           >
             <FileText className="w-3.5 h-3.5" />
             <span>CLASSIC CV</span>
@@ -159,133 +294,126 @@ export const HUD = () => {
         </div>
       </div>
 
-      {/* 2. MOBILE BOTTOM-CENTER FLOATING DESTINATIONS PILL (above flight controls) */}
-      <div className="md:hidden fixed bottom-44 left-1/2 -translate-x-1/2 z-50 pointer-events-auto">
-        <button
-          onClick={() => setIsNavDrawerOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-950/90 border border-cyan-500/50 text-cyan-300 text-xs font-mono font-bold shadow-[0_0_20px_rgba(0,240,255,0.25)] backdrop-blur-xl transition-all active:scale-95 cursor-pointer"
-        >
-          <Menu className="w-3.5 h-3.5 text-cyan-400" />
-          <span>WARP DESTINATIONS</span>
-          <ChevronUp className="w-3.5 h-3.5 text-cyan-400" />
-        </button>
-      </div>
+      {/* 2. MOBILE DESTINATIONS SLIDE-OUT DRAWER (FROM LEFT, PORTALED TO BODY AT z-[100]) */}
+      {isNavDrawerOpen && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[100] flex pointer-events-auto select-none">
+          {/* Backdrop overlay */}
+          <div 
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
+            onClick={() => setIsNavDrawerOpen(false)}
+          />
 
-      {/* 3. MOBILE DESTINATIONS SLIDE-UP DRAWER */}
-      {isNavDrawerOpen && (
-        <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/75 backdrop-blur-md pointer-events-auto animate-in fade-in duration-200">
-          <div className="relative w-full bg-[#0b1120] border-t-2 border-cyan-500/50 rounded-t-3xl p-5 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] max-h-[85vh] overflow-y-auto pb-safe">
-            {/* Drawer Header */}
-            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
-              <div className="flex items-center gap-2 text-white font-sans font-bold text-base">
-                <Compass className="w-5 h-5 text-cyan-400" />
-                <span>Fast-Travel Archipelagos</span>
+          {/* Left slide-out sidebar */}
+          <div className="relative w-80 max-w-[85vw] h-full bg-[#080d1a] border-r border-cyan-500/40 shadow-[15px_0_50px_rgba(0,0,0,0.85)] backdrop-blur-2xl flex flex-col justify-between px-4 pt-12 pb-7 sm:px-5 sm:pt-14 sm:pb-8 overflow-y-auto z-10 animate-in slide-in-from-left duration-200">
+            {/* Header & List Items */}
+            <div>
+              {/* Header */}
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-800/80">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-cyan-950/70 border border-cyan-500/40 text-cyan-400">
+                    <Compass className="w-5 h-5 animate-spin" style={{ animationDuration: '12s' }} />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-sans font-bold text-sm tracking-wide">WARP DESTINATIONS</h3>
+                    <p className="text-[10px] text-cyan-400 font-mono">Fast-Travel Archipelagos</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsNavDrawerOpen(false)}
+                  className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white active:scale-95 transition-all"
+                  aria-label="Close menu"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                onClick={() => setIsNavDrawerOpen(false)}
-                className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
+
+              {/* Current Zone indicator in drawer */}
+              <div className="mb-3 px-3 py-2 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between">
+                <span className="text-[10px] text-slate-400 font-mono uppercase">Current Location</span>
+                <span className={`text-[11px] font-mono font-bold ${currentZoneData.color}`}>
+                  {currentZoneData.full || currentZoneData.name}
+                </span>
+              </div>
+
+              {/* Navigation Options in LIST VIEW */}
+              <div className="flex flex-col gap-1.5">
+                {navItems.map((item) => {
+                  const isCurrent = currentZone === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleNavSelect(item.id)}
+                      className={`w-full flex items-center justify-between p-2.5 rounded-xl transition-all active:scale-[0.98] text-left border ${
+                        isCurrent
+                          ? 'bg-cyan-950/40 border-cyan-500/50 shadow-[0_0_15px_rgba(0,240,255,0.15)]'
+                          : 'bg-slate-900/60 hover:bg-slate-800/70 active:bg-slate-800 border-slate-800/70 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`p-2 rounded-lg shrink-0 ${item.bg} border ${item.border}`}>
+                          {item.icon}
+                        </div>
+                        <div className="min-w-0">
+                          <div className={`text-xs font-mono font-bold truncate ${item.textColor}`}>
+                            {item.title}
+                          </div>
+                          <div className="text-[10px] text-slate-400 truncate font-sans">
+                            {item.desc}
+                          </div>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-600 shrink-0 ml-2" />
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            {/* Quick Tour, Home & Resume Hero Actions */}
-            <div className="grid grid-cols-3 gap-2 mb-4">
-              <button
-                onClick={() => handleNavSelect('home')}
-                className="p-2.5 rounded-2xl bg-white/[0.05] border border-white/[0.1] text-slate-200 font-mono font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95"
-              >
-                <Home className="w-3.5 h-3.5 text-white" />
-                <span>HOME</span>
-              </button>
-
-              <button
-                onClick={() => handleNavSelect('tour')}
-                className="p-2.5 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/50 text-cyan-300 font-mono font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                <span>TOUR</span>
-              </button>
-
-              <button
-                onClick={() => handleNavSelect('classic')}
-                className="p-2.5 rounded-2xl bg-gradient-to-r from-pink-500/20 to-purple-500/20 border border-pink-400/50 text-pink-300 font-mono font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95"
-              >
-                <FileText className="w-3.5 h-3.5 text-pink-400" />
-                <span>CV</span>
-              </button>
+            {/* Quick Audio Controls in Drawer */}
+            <div className="pt-3 pb-1 mt-4 border-t border-slate-800/80 shrink-0 space-y-2">
+              <div className="text-[10px] text-slate-500 font-mono tracking-wider uppercase px-1">Audio Settings</div>
+              <div className="flex items-center justify-between text-xs font-mono px-1">
+                <span className="text-slate-300 flex items-center gap-1.5">
+                  <Volume2 className="w-3.5 h-3.5 text-cyan-400" /> Sound FX (Firing)
+                </span>
+                <button
+                  onClick={toggleAudio}
+                  className={`px-2.5 py-0.5 rounded text-[10px] font-bold border transition-colors cursor-pointer ${
+                    isAudioMuted 
+                      ? 'border-rose-500/50 text-rose-400 bg-rose-950/40' 
+                      : 'border-emerald-500/50 text-emerald-400 bg-emerald-950/40'
+                  }`}
+                >
+                  {isAudioMuted ? 'MUTED' : 'ENABLED'}
+                </button>
+              </div>
+              <div className="flex items-center justify-between text-xs font-mono px-1">
+                <span className="text-slate-300 flex items-center gap-1.5">
+                  <Music className="w-3.5 h-3.5 text-cyan-400" /> Ambient Music
+                </span>
+                <button
+                  onClick={toggleMusic}
+                  className={`px-2.5 py-0.5 rounded text-[10px] font-bold border transition-colors cursor-pointer ${
+                    isMusicEnabled 
+                      ? 'border-cyan-500/50 text-cyan-400 bg-cyan-950/40' 
+                      : 'border-slate-700 text-slate-400 bg-slate-900/60'
+                  }`}
+                >
+                  {isMusicEnabled ? 'PLAYING' : 'OFF'}
+                </button>
+              </div>
             </div>
 
-            {/* Destination Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-              <button
-                onClick={() => handleNavSelect('about')}
-                className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-pink-500/40 text-left flex flex-col gap-1 active:scale-95"
-              >
-                <div className="flex items-center gap-2 text-pink-400 font-bold text-xs font-mono">
-                  <User className="w-4 h-4" />
-                  <span>ABOUT ME</span>
-                </div>
-                <span className="text-[10px] text-slate-400 font-sans">Biography & Profile</span>
-              </button>
-
-              <button
-                onClick={() => handleNavSelect('projects')}
-                className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-blue-500/40 text-left flex flex-col gap-1 active:scale-95"
-              >
-                <div className="flex items-center gap-2 text-blue-400 font-bold text-xs font-mono">
-                  <Briefcase className="w-4 h-4" />
-                  <span>PROJECTS</span>
-                </div>
-                <span className="text-[10px] text-slate-400 font-sans">Toyota, Pampers, 3D Apps</span>
-              </button>
-
-              <button
-                onClick={() => handleNavSelect('skills')}
-                className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/40 text-left flex flex-col gap-1 active:scale-95"
-              >
-                <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs font-mono">
-                  <Crosshair className="w-4 h-4" />
-                  <span>SKILLS</span>
-                </div>
-                <span className="text-[10px] text-slate-400 font-sans">Target Range & Stacks</span>
-              </button>
-
-              <button
-                onClick={() => handleNavSelect('experience')}
-                className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-purple-500/40 text-left flex flex-col gap-1 active:scale-95"
-              >
-                <div className="flex items-center gap-2 text-purple-400 font-bold text-xs font-mono">
-                  <Sparkles className="w-4 h-4" />
-                  <span>TIMELINE</span>
-                </div>
-                <span className="text-[10px] text-slate-400 font-sans">Career & Leadership</span>
-              </button>
-
-              <button
-                onClick={() => handleNavSelect('contact')}
-                className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-rose-500/40 text-left flex flex-col gap-1 active:scale-95"
-              >
-                <div className="flex items-center gap-2 text-rose-400 font-bold text-xs font-mono">
-                  <Mail className="w-4 h-4" />
-                  <span>CONTACT</span>
-                </div>
-                <span className="text-[10px] text-slate-400 font-sans">Email & Direct Message</span>
-              </button>
-
-              <button
-                onClick={() => handleNavSelect('hangar')}
-                className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-cyan-500/40 text-left flex flex-col gap-1 active:scale-95"
-              >
-                <div className="flex items-center gap-2 text-cyan-400 font-bold text-xs font-mono">
-                  <Rocket className="w-4 h-4" />
-                  <span>HANGAR</span>
-                </div>
-                <span className="text-[10px] text-slate-400 font-sans">Customizer & Ships</span>
-              </button>
+            {/* Footer info */}
+            <div className="pt-3 pb-2 mt-2 border-t border-slate-800/80 shrink-0">
+              <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono px-1">
+                <span>PILOT: <strong className="text-white">VISHAV GARG</strong></span>
+                <span className="text-emerald-400">ONLINE (60 FPS)</span>
+              </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* 4. DESKTOP BOTTOM NAVIGATION BAR */}
