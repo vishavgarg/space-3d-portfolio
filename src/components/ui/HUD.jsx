@@ -4,6 +4,7 @@ import { usePlayerStore } from '../../store/playerStore';
 import { useGameStore } from '../../store/gameStore';
 import { useTourStore } from '../../store/tourStore';
 import { useDeviceCapability } from '../../hooks/useDeviceCapability';
+import { soundEngine } from '../../utils/soundEngine';
 import { 
   Volume2, 
   VolumeX, 
@@ -20,7 +21,8 @@ import {
   Rocket,
   ChevronUp,
   X,
-  Menu
+  Menu,
+  Home
 } from 'lucide-react';
 
 export const HUD = () => {
@@ -29,6 +31,7 @@ export const HUD = () => {
   const isAudioMuted = useUIStore((s) => s.isAudioMuted);
   const toggleAudio = useUIStore((s) => s.toggleAudio);
   const setActiveModal = useUIStore((s) => s.setActiveModal);
+  const goHome = useUIStore((s) => s.goHome);
   const startTour = useTourStore((s) => s.startTour);
   const setClassicMode = useUIStore((s) => s.setClassicMode);
 
@@ -49,9 +52,18 @@ export const HUD = () => {
 
   const currentZoneData = zoneInfo[currentZone] || zoneInfo.spawn;
 
+  const handleGoHome = () => {
+    soundEngine.stopAmbient();
+    useTourStore.getState().exitTour();
+    useGameStore.getState().resetGame();
+    goHome();
+  };
+
   const handleNavSelect = (modalName) => {
     setIsNavDrawerOpen(false);
-    if (modalName === 'tour') {
+    if (modalName === 'home') {
+      handleGoHome();
+    } else if (modalName === 'tour') {
       startTour();
     } else if (modalName === 'classic') {
       setClassicMode(true);
@@ -89,6 +101,16 @@ export const HUD = () => {
 
         {/* Right: Score Counter & Utility Quick-Actions */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 pointer-events-auto">
+          {/* Home — back to landing screen */}
+          <button
+            onClick={handleGoHome}
+            className="p-2 sm:p-2.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-slate-700/70 text-slate-300 hover:text-white backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-md"
+            title="Back to Landing Screen"
+            aria-label="Back to Landing Screen"
+          >
+            <Home className="w-4 h-4 text-slate-300" />
+          </button>
+
           {/* Score Badge */}
           <div className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-slate-900/85 border border-amber-500/40 text-amber-300 backdrop-blur-md shadow-lg">
             <Trophy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 shrink-0" />
@@ -167,22 +189,30 @@ export const HUD = () => {
               </button>
             </div>
 
-            {/* Quick Tour & Resume Hero Actions */}
-            <div className="grid grid-cols-2 gap-2.5 mb-4">
+            {/* Quick Tour, Home & Resume Hero Actions */}
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              <button
+                onClick={() => handleNavSelect('home')}
+                className="p-2.5 rounded-2xl bg-white/[0.05] border border-white/[0.1] text-slate-200 font-mono font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95"
+              >
+                <Home className="w-3.5 h-3.5 text-white" />
+                <span>HOME</span>
+              </button>
+
               <button
                 onClick={() => handleNavSelect('tour')}
-                className="p-3 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/50 text-cyan-300 font-mono font-bold text-xs flex items-center justify-center gap-2 active:scale-95"
+                className="p-2.5 rounded-2xl bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/50 text-cyan-300 font-mono font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95"
               >
-                <Sparkles className="w-4 h-4 text-cyan-400" />
-                <span>GUIDED TOUR</span>
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                <span>TOUR</span>
               </button>
 
               <button
                 onClick={() => handleNavSelect('classic')}
-                className="p-3 rounded-2xl bg-gradient-to-r from-pink-500/20 to-purple-500/20 border border-pink-400/50 text-pink-300 font-mono font-bold text-xs flex items-center justify-center gap-2 active:scale-95"
+                className="p-2.5 rounded-2xl bg-gradient-to-r from-pink-500/20 to-purple-500/20 border border-pink-400/50 text-pink-300 font-mono font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95"
               >
-                <FileText className="w-4 h-4 text-pink-400" />
-                <span>CLASSIC CV</span>
+                <FileText className="w-3.5 h-3.5 text-pink-400" />
+                <span>CV</span>
               </button>
             </div>
 

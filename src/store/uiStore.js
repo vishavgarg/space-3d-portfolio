@@ -44,6 +44,11 @@ export const useUIStore = create((set, get) => ({
     set({ hasStartedExperience: true });
   },
 
+  goHome: () => {
+    soundEngine.stopAmbient();
+    set({ hasStartedExperience: false, activeModal: null, selectedProject: null });
+  },
+
   setInteractionPrompt: (prompt) => set({ interactionPrompt: prompt }),
 
   showToast: (title, message, type = 'info') => {

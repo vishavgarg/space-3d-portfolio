@@ -404,6 +404,28 @@ class SoundEngine {
 
     this.isAmbientPlaying = true;
   }
+
+  // Stop subtle cyber ambient chord generator
+  stopAmbient() {
+    if (!this.isAmbientPlaying && !this.ambientGain) return;
+    if (this.ambientGain && this.ctx) {
+      try {
+        this.ambientGain.gain.cancelScheduledValues(this.ctx.currentTime);
+        this.ambientGain.gain.setValueAtTime(0, this.ctx.currentTime);
+      } catch (e) {}
+    }
+    if (this.ambientOscs && this.ambientOscs.length > 0) {
+      this.ambientOscs.forEach((osc) => {
+        try {
+          osc.stop();
+          osc.disconnect();
+        } catch (e) {}
+      });
+    }
+    this.ambientOscs = [];
+    this.ambientGain = null;
+    this.isAmbientPlaying = false;
+  }
 }
 
 export const soundEngine = new SoundEngine();

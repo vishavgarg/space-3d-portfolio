@@ -20,6 +20,7 @@ export const DroneController = () => {
   const resetTrigger = usePlayerStore((s) => s.resetTrigger);
   const selectedShip = usePlayerStore((s) => s.selectedShip);
   const showToast = useUIStore((s) => s.showToast);
+  const hasStartedExperience = useUIStore((s) => s.hasStartedExperience);
   const discoverZone = useGameStore((s) => s.discoverZone);
 
   // Active Ship Class configuration
@@ -63,7 +64,7 @@ export const DroneController = () => {
   }, [resetTrigger]);
 
   useFrame((state, delta) => {
-    if (!groupRef.current) return;
+    if (!groupRef.current || !hasStartedExperience) return;
 
     // Fast, Snappy Arcade Movement Dynamics with Ship Class Multipliers
     const maxSpeed = (keys.boost ? 80 : 42) * mult.maxSpeed;

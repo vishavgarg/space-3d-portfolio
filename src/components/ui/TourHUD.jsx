@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronLeft, X, Compass, ExternalLink, Sparkles, Minimize2, Maximize2 } from 'lucide-react';
+import { ChevronRight, ChevronLeft, X, Compass, ExternalLink, Sparkles, Minimize2, Maximize2, Home } from 'lucide-react';
 import { useTourStore, tourStops } from '../../store/tourStore';
 import { useUIStore } from '../../store/uiStore';
 
@@ -64,6 +64,19 @@ export const TourHUD = () => {
           </div>
 
           <div className="h-4 w-px bg-slate-800 ml-1" />
+
+          {/* Home Button */}
+          <button
+            onClick={() => {
+              exitTour();
+              useUIStore.getState().goHome();
+            }}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-900 hover:bg-cyan-950/60 border border-slate-800 hover:border-cyan-500/40 text-slate-400 hover:text-cyan-300 text-xs font-mono transition-colors cursor-pointer"
+            title="Return to Landing Screen"
+          >
+            <Home className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">HOME</span>
+          </button>
 
           {/* Exit / Free Roam Button */}
           <button
