@@ -129,100 +129,10 @@ export const MobileControls = () => {
 
   return (
     <div className="fixed inset-x-0 bottom-4 sm:bottom-6 z-40 px-3 sm:px-6 flex items-end justify-between pointer-events-none select-none">
-      {/* LEFT: Round Virtual Joystick */}
-      <div
-        ref={joystickRef}
-        onTouchStart={handleJoystickStart}
-        onTouchMove={handleJoystickMove}
-        onTouchEnd={handleJoystickEnd}
-        onTouchCancel={handleJoystickEnd}
-        className="relative w-36 h-36 sm:w-40 sm:h-40 pointer-events-auto touch-none"
-        style={{ WebkitTouchCallout: 'none' }}
-      >
-        {/* Outer ring (base) */}
-        <div className={`absolute inset-0 rounded-full border-2 transition-colors duration-150 ${
-          isJoystickActive
-            ? 'border-cyan-400/60 bg-slate-950/60 shadow-[0_0_30px_rgba(0,240,255,0.15)]'
-            : 'border-slate-700/50 bg-slate-950/50'
-        } backdrop-blur-xl`}>
-          {/* Crosshair guides */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className={`absolute w-px h-8 top-3 transition-colors ${isJoystickActive ? 'bg-cyan-500/40' : 'bg-slate-700/30'}`} />
-            <div className={`absolute w-px h-8 bottom-3 transition-colors ${isJoystickActive ? 'bg-cyan-500/40' : 'bg-slate-700/30'}`} />
-            <div className={`absolute h-px w-8 left-3 transition-colors ${isJoystickActive ? 'bg-cyan-500/40' : 'bg-slate-700/30'}`} />
-            <div className={`absolute h-px w-8 right-3 transition-colors ${isJoystickActive ? 'bg-cyan-500/40' : 'bg-slate-700/30'}`} />
-          </div>
-        </div>
-
-        {/* Inner knob (thumb) */}
-        <div
-          className={`absolute rounded-full transition-shadow duration-100 flex items-center justify-center ${
-            isJoystickActive
-              ? 'bg-cyan-400/90 shadow-[0_0_20px_rgba(0,240,255,0.6)] scale-110'
-              : 'bg-slate-700/80 border border-slate-600/60 shadow-lg'
-          }`}
-          style={{
-            width: 48,
-            height: 48,
-            left: '50%',
-            top: '50%',
-            transform: `translate(calc(-50% + ${joystickOffset.x}px), calc(-50% + ${joystickOffset.y}px))`,
-            transition: isJoystickActive ? 'none' : 'transform 0.2s ease-out',
-          }}
-        >
-          <div className={`w-2.5 h-2.5 rounded-full transition-colors ${
-            isJoystickActive ? 'bg-white' : 'bg-cyan-400/60'
-          }`} />
-        </div>
-      </div>
-
-      {/* RIGHT: Action Cluster (Altitude, Nitro, Laser, Reset) */}
+      {/* LEFT: Action Cluster (Altitude, Nitro, Laser, Reset) */}
       <div className="flex items-end gap-2.5 sm:gap-3 pointer-events-auto touch-none">
-        {/* Altitude Column (Ascend / Descend) */}
-        <div className="flex flex-col gap-2">
-          {/* Ascend / Fly Up (Space) */}
-          <button
-            onTouchStart={(e) => { e.preventDefault(); setControlState('up', 'Space', true); }}
-            onTouchEnd={(e) => { e.preventDefault(); setControlState('up', 'Space', false); }}
-            onTouchCancel={(e) => { e.preventDefault(); setControlState('up', 'Space', false); }}
-            onMouseDown={() => setControlState('up', 'Space', true)}
-            onMouseUp={() => setControlState('up', 'Space', false)}
-            onMouseLeave={() => setControlState('up', 'Space', false)}
-            className={`w-12 h-12 rounded-2xl border flex flex-col items-center justify-center transition-all ${
-              activeButtons.up
-                ? 'bg-blue-500 border-blue-400 text-white shadow-[0_0_20px_#3b82f6] scale-95'
-                : 'bg-slate-950/80 border-blue-500/40 text-blue-300'
-            }`}
-            aria-label="Ascend"
-            title="Fly Up (Space)"
-          >
-            <ChevronsUp className="w-5 h-5" />
-            <span className="text-[9px] font-mono font-bold leading-none">UP</span>
-          </button>
-
-          {/* Descend / Fly Down (Ctrl / C) */}
-          <button
-            onTouchStart={(e) => { e.preventDefault(); setControlState('down', 'ControlLeft', true); }}
-            onTouchEnd={(e) => { e.preventDefault(); setControlState('down', 'ControlLeft', false); }}
-            onTouchCancel={(e) => { e.preventDefault(); setControlState('down', 'ControlLeft', false); }}
-            onMouseDown={() => setControlState('down', 'ControlLeft', true)}
-            onMouseUp={() => setControlState('down', 'ControlLeft', false)}
-            onMouseLeave={() => setControlState('down', 'ControlLeft', false)}
-            className={`w-12 h-12 rounded-2xl border flex flex-col items-center justify-center transition-all ${
-              activeButtons.down
-                ? 'bg-indigo-500 border-indigo-400 text-white shadow-[0_0_20px_#6366f1] scale-95'
-                : 'bg-slate-950/80 border-indigo-500/40 text-indigo-300'
-            }`}
-            aria-label="Descend"
-            title="Fly Down (Ctrl)"
-          >
-            <ChevronsDown className="w-5 h-5" />
-            <span className="text-[9px] font-mono font-bold leading-none">DOWN</span>
-          </button>
-        </div>
-
         {/* Primary Combat & Speed Action Column */}
-        <div className="flex flex-col gap-2.5 items-end">
+        <div className="flex flex-col gap-2.5 items-start">
           {/* Quick Reset to Vista */}
           <button
             onTouchStart={(e) => { e.preventDefault(); setControlState('reset', 'KeyR', true); }}
@@ -276,6 +186,96 @@ export const MobileControls = () => {
             <Crosshair className="w-7 h-7 stroke-[2.5]" />
             <span className="text-[9px] font-mono font-black leading-none mt-0.5">FIRE</span>
           </button>
+        </div>
+
+        {/* Altitude Column (Ascend / Descend) */}
+        <div className="flex flex-col gap-2">
+          {/* Ascend / Fly Up (Space) */}
+          <button
+            onTouchStart={(e) => { e.preventDefault(); setControlState('up', 'Space', true); }}
+            onTouchEnd={(e) => { e.preventDefault(); setControlState('up', 'Space', false); }}
+            onTouchCancel={(e) => { e.preventDefault(); setControlState('up', 'Space', false); }}
+            onMouseDown={() => setControlState('up', 'Space', true)}
+            onMouseUp={() => setControlState('up', 'Space', false)}
+            onMouseLeave={() => setControlState('up', 'Space', false)}
+            className={`w-12 h-12 rounded-2xl border flex flex-col items-center justify-center transition-all ${
+              activeButtons.up
+                ? 'bg-blue-500 border-blue-400 text-white shadow-[0_0_20px_#3b82f6] scale-95'
+                : 'bg-slate-950/80 border-blue-500/40 text-blue-300'
+            }`}
+            aria-label="Ascend"
+            title="Fly Up (Space)"
+          >
+            <ChevronsUp className="w-5 h-5" />
+            <span className="text-[9px] font-mono font-bold leading-none">UP</span>
+          </button>
+
+          {/* Descend / Fly Down (Ctrl / C) */}
+          <button
+            onTouchStart={(e) => { e.preventDefault(); setControlState('down', 'ControlLeft', true); }}
+            onTouchEnd={(e) => { e.preventDefault(); setControlState('down', 'ControlLeft', false); }}
+            onTouchCancel={(e) => { e.preventDefault(); setControlState('down', 'ControlLeft', false); }}
+            onMouseDown={() => setControlState('down', 'ControlLeft', true)}
+            onMouseUp={() => setControlState('down', 'ControlLeft', false)}
+            onMouseLeave={() => setControlState('down', 'ControlLeft', false)}
+            className={`w-12 h-12 rounded-2xl border flex flex-col items-center justify-center transition-all ${
+              activeButtons.down
+                ? 'bg-indigo-500 border-indigo-400 text-white shadow-[0_0_20px_#6366f1] scale-95'
+                : 'bg-slate-950/80 border-indigo-500/40 text-indigo-300'
+            }`}
+            aria-label="Descend"
+            title="Fly Down (Ctrl)"
+          >
+            <ChevronsDown className="w-5 h-5" />
+            <span className="text-[9px] font-mono font-bold leading-none">DOWN</span>
+          </button>
+        </div>
+      </div>
+
+      {/* RIGHT: Round Virtual Joystick (Movement Steering) */}
+      <div
+        ref={joystickRef}
+        onTouchStart={handleJoystickStart}
+        onTouchMove={handleJoystickMove}
+        onTouchEnd={handleJoystickEnd}
+        onTouchCancel={handleJoystickEnd}
+        className="relative w-36 h-36 sm:w-40 sm:h-40 pointer-events-auto touch-none"
+        style={{ WebkitTouchCallout: 'none' }}
+      >
+        {/* Outer ring (base) */}
+        <div className={`absolute inset-0 rounded-full border-2 transition-colors duration-150 ${
+          isJoystickActive
+            ? 'border-cyan-400/60 bg-slate-950/60 shadow-[0_0_30px_rgba(0,240,255,0.15)]'
+            : 'border-slate-700/50 bg-slate-950/50'
+        } backdrop-blur-xl`}>
+          {/* Crosshair guides */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className={`absolute w-px h-8 top-3 transition-colors ${isJoystickActive ? 'bg-cyan-500/40' : 'bg-slate-700/30'}`} />
+            <div className={`absolute w-px h-8 bottom-3 transition-colors ${isJoystickActive ? 'bg-cyan-500/40' : 'bg-slate-700/30'}`} />
+            <div className={`absolute h-px w-8 left-3 transition-colors ${isJoystickActive ? 'bg-cyan-500/40' : 'bg-slate-700/30'}`} />
+            <div className={`absolute h-px w-8 right-3 transition-colors ${isJoystickActive ? 'bg-cyan-500/40' : 'bg-slate-700/30'}`} />
+          </div>
+        </div>
+
+        {/* Inner knob (thumb) */}
+        <div
+          className={`absolute rounded-full transition-shadow duration-100 flex items-center justify-center ${
+            isJoystickActive
+              ? 'bg-cyan-400/90 shadow-[0_0_20px_rgba(0,240,255,0.6)] scale-110'
+              : 'bg-slate-700/80 border border-slate-600/60 shadow-lg'
+          }`}
+          style={{
+            width: 48,
+            height: 48,
+            left: '50%',
+            top: '50%',
+            transform: `translate(calc(-50% + ${joystickOffset.x}px), calc(-50% + ${joystickOffset.y}px))`,
+            transition: isJoystickActive ? 'none' : 'transform 0.2s ease-out',
+          }}
+        >
+          <div className={`w-2.5 h-2.5 rounded-full transition-colors ${
+            isJoystickActive ? 'bg-white' : 'bg-cyan-400/60'
+          }`} />
         </div>
       </div>
     </div>
